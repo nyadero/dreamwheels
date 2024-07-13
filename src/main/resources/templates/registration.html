@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration Form</title>
+</head>
+<body>
+   <div class="container col-md-offset-3 col-md-8 mt-lg-5">
+       <div class="row mt-2">
+           <div th:if="${param.success}">
+               Registration Successful, Please check your email to complete verification.
+           </div>
+
+           <div class="m-4">
+               User Registration Form
+           </div>
+       </div>
+
+       <form action="" method="post">
+           <!--       firstName-->
+           <div class="mb-3 row">
+               <label for="firstName" class="cols-sm-2 col-form-label">FirstName</label>
+               <div class="col-sm-6">
+                   <input type="text" class="form-control" id="firstName" name="firstName" required  autofocus>
+               </div>
+           </div>
+           <!--       lastName-->
+           <div class="mb-3 row">
+               <label for="lastName" class="cols-sm-2 col-form-label">LastName</label>
+               <div class="col-sm-6">
+                   <input type="text" class="form-control" id="lastName" name="lastName" required>
+               </div>
+           </div>
+           <!--       email-->
+           <div class="mb-3 row">
+               <label for="email" class="cols-sm-2 col-form-label">Email</label>
+               <div class="col-sm-6">
+                   <input type="email" class="form-control" id="email" name="email" required  autofocus>
+               </div>
+           </div>
+<!--                  password-->
+           <div class="mb-3 row">
+               <label for="password" class="cols-sm-2 col-form-label">Password</label>
+               <div class="col-sm-6">
+                   <input type="password" class="form-control" id="password" name="password" required th:field="*{password}">
+               </div>
+           </div>
+
+           <div>
+               <button type="submit" class="btn btn-success">Register </button>
+               <span>Registered already?  </span>
+           </div>
+       </form>
+   </div>
+</body>
+</html>
