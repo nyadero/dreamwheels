@@ -13,4 +13,6 @@ public interface GarageRepository extends PagingAndSortingRepository<Garage, Str
     Garage save(Garage wheelie);
 
     void deleteById(String id);
+
+    Optional<Garage> findByIdAndUserId(String id, String userId);
 }

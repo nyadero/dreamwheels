@@ -1,5 +1,13 @@
 package com.dreamwheels.dreamwheels.users.entity;
 
+import com.dreamwheels.dreamwheels.auth.entity.PasswordResetToken;
+import com.dreamwheels.dreamwheels.auth.entity.VerificationToken;
+import com.dreamwheels.dreamwheels.auth.enums.Role;
+import com.dreamwheels.dreamwheels.garage.entity.Garage;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,6 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity(name = "users")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,10 +39,11 @@ public class User implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String about;
     private boolean isEnabled = false;
+    private Role role = Role.USER;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return role.getAuthorities();
     }
 
     @Override
@@ -51,19 +62,37 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+//    @JsonIgnore
+    private List<Garage> garages = new ArrayList<>(0);
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+//    @JsonIgnore
+    private PasswordResetToken passwordResetToken;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+//    @JsonIgnore
+    private VerificationToken verificationToken;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

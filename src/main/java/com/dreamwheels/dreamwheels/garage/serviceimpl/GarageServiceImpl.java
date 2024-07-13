@@ -1,5 +1,6 @@
 package com.dreamwheels.dreamwheels.garage.serviceimpl;
 
+import com.dreamwheels.dreamwheels.auth.repository.AuthRepository;
 import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundException;
 import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
@@ -11,12 +12,15 @@ import com.dreamwheels.dreamwheels.garage.entity.Motorbike;
 import com.dreamwheels.dreamwheels.garage.entity.Vehicle;
 import com.dreamwheels.dreamwheels.garage.repository.GarageRepository;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;
+import com.dreamwheels.dreamwheels.users.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +29,9 @@ import java.time.LocalDateTime;
 public class GarageServiceImpl implements GarageService {
     @Autowired
     private GarageRepository garageRepository;
+
+    @Autowired
+    private AuthRepository authRepository;
 
     public static final int PAGE_SIZE = 20;
 
@@ -37,6 +44,7 @@ public class GarageServiceImpl implements GarageService {
         garage.setDescription(vehicleGarageDto.getDescription());
         garage.setBuyingPrice(vehicleGarageDto.getBuyingPrice());
         garage.setPreviousOwnersCount(vehicleGarageDto.getPreviousOwnersCount());
+        garage.setUser(authenticatedUser());
 
         return new ResponseEntity<>(new GarageApiResponse(garageRepository.save(garage), "Your vehicle garage has been saved", ResponseType.SUCCESS),
                 HttpStatus.CREATED);
@@ -52,6 +60,7 @@ public class GarageServiceImpl implements GarageService {
         garage.setDescription(motorbikeGarageDto.getDescription());
         garage.setBuyingPrice(motorbikeGarageDto.getBuyingPrice());
         garage.setPreviousOwnersCount(motorbikeGarageDto.getPreviousOwnersCount());
+        garage.setUser(authenticatedUser());
 
         return new ResponseEntity<>(new GarageApiResponse(garageRepository.save(garage), "Your vehicle garage has been saved", ResponseType.SUCCESS),
                 HttpStatus.CREATED);
@@ -76,7 +85,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     public ResponseEntity<GarageApiResponse> updateVehicleGarage(VehicleGarageDto vehicleGarageDto, String id) {
-        Garage garage = garageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
+        Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Vehicle vehicle){
             vehicle.setVehicleMileage(vehicleGarageDto.getVehicleMileage());
             vehicle.setVehicleMake(vehicleGarageDto.getVehicleMake());
@@ -96,7 +105,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     public ResponseEntity<GarageApiResponse> updateMotorbikeGarage(MotorbikeGarageDto motorbikeGarageDto, String id) {
-        Garage garage = garageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
+        Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Motorbike motorbike){
             motorbike.setName(motorbikeGarageDto.getName());
             motorbike.setDescription(motorbikeGarageDto.getDescription());
@@ -151,5 +160,11 @@ public class GarageServiceImpl implements GarageService {
         motorbike.setMotorbikeTransmission(motorbikeGarageDto.getMotorbikeTransmission());
         return motorbike;
     }
+
+    private User authenticatedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authRepository.findByEmail(authentication.getName());
+    }
+
 
 }

@@ -3,6 +3,7 @@ package com.dreamwheels.dreamwheels.auth.serviceimpl;
 import com.dreamwheels.dreamwheels.auth.dtos.*;
 import com.dreamwheels.dreamwheels.auth.entity.PasswordResetToken;
 import com.dreamwheels.dreamwheels.auth.entity.VerificationToken;
+import com.dreamwheels.dreamwheels.auth.enums.Role;
 import com.dreamwheels.dreamwheels.auth.events.ForgotPasswordEvent;
 import com.dreamwheels.dreamwheels.auth.events.RegistrationCompleteEvent;
 import com.dreamwheels.dreamwheels.auth.events.ResendVerificationTokenEvent;
@@ -71,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
                 .userName(registerRequest.getUserName())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .isEnabled(false)
+                .role(Role.USER)
                 .build();
         var savedUser = authRepository.save(user);
 //        String link = "http://localhost:8080/api/v1/registration/confirm?token=";

@@ -1,5 +1,8 @@
 package com.dreamwheels.dreamwheels.garage.entity;
 
+import com.dreamwheels.dreamwheels.users.entity.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +32,15 @@ public class Garage {
 
     private int previousOwnersCount;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "userId", foreignKey = @ForeignKey(name = "FK_USER_ID"))
+    @JsonManagedReference
+    private User user;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
 }

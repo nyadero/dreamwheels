@@ -26,6 +26,7 @@ public class GarageController {
 
     // add a vehicle Garage
     @PostMapping("/vehicle")
+    @PreAuthorize("isAuthenticated")
     @Operation(
             summary = "add a vehicle Garage",
             description = "Saves a vehicle Garage to the database"
@@ -46,6 +47,7 @@ public class GarageController {
 
     // add motorbike Garage
     @PostMapping("/motorbike")
+    @PreAuthorize("isAuthenticated")
     @Operation(
             summary = "add a motorbike Garage",
             description = "Saves a motorbike Garage to the database"
@@ -91,6 +93,7 @@ public class GarageController {
 
     // update vehicle Garage
     @PutMapping("/vehicle/{id}")
+    @PreAuthorize("isAuthenticated")
     @Operation(
             summary = "Get Garage by id",
             description = "Fetches and returns a Garage by its id"
@@ -112,6 +115,7 @@ public class GarageController {
 
     // update motorbike Garage
     @PutMapping("/motorbike/{id}")
+    @PreAuthorize("isAuthenticated")
     @Operation(
             summary = "update motorbike Garage",
             description = "Updates a motorbike Garage"
@@ -157,6 +161,7 @@ public class GarageController {
 
     // delete Garage
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated")
     @Operation(
             summary = "delete Garage",
             description = "Deletes a Garage from the database"
