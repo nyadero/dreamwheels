@@ -1,13 +1,26 @@
 # Project Name: Dreamwheels
 ## Description
 This is a simple springboot project to allow users to create and manage their dream garages. It is a basic or simple 
-project that i am using to practice what i have learnt in the spring and springboot ecosystem.
+project that i am using to practice more advanced concepts i have learnt or planning to learn in the spring and springboot ecosystem.
 
 ### Technologies and Dependencies Used:
 * Spring Security
 * Postgresql
 * Lombok
 * Spring Validation
+* Flyway
 
 ### Future plans
-Use websockets to build a messaging feature and possibly a marketplace for the same.
+* Implement Redis caching
+* Implement Kafka Message Broker
+* Implement Websockets for rt messaging
+
+### TODOS
+- [X] Integrate flyway migrations
+- [ ] Files upload and deletion
+- [ ] Implement Roles and permissions
+- [ ] Write unit tests
+- [ ] Caching
+- [ ] Configure CI/CD pipeline
+- [ ] Update documentation
+
