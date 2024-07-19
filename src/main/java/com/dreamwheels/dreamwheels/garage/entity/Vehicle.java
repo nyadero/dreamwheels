@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "vehicle-wheelies")
+@Entity(name = "vehicle-garages")
 @Builder
 public class Vehicle extends Garage {
     private String vehicleMake;

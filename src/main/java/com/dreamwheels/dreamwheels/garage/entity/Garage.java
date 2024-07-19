@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity(name = "wheelies")
+@Entity(name = "garages")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Garage {
 
