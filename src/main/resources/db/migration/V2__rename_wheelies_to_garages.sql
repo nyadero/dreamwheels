@@ -1,1 +1,0 @@
-ALTER TABLE wheelies RENAME TO garages;
