@@ -55,7 +55,6 @@ public class Garage {
     @JsonManagedReference
     private User user;
 
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 

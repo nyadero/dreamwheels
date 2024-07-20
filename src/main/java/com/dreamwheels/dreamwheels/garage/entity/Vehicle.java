@@ -13,7 +13,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "vehicle-garages")
+@Entity(name = "vehicle_garages")
 @Builder
 public class Vehicle extends Garage {
     private String vehicleMake;
@@ -26,5 +26,4 @@ public class Vehicle extends Garage {
     private EnginePosition enginePosition;
     @Enumerated(value = EnumType.STRING)
     private EngineAspiration vehicleEngineAspiration;
-
 }
