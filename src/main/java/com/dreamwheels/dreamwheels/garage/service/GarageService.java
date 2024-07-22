@@ -18,9 +18,9 @@ public interface GarageService {
 
     ResponseEntity<GarageApiResponse> updateMotorbikeGarage(MotorbikeGarageDto motorbikeGarageDto, String id);
 
-    ResponseEntity<GarageApiResponse> garagesByCategory(String category);
+    ResponseEntity<GarageApiResponse> garagesByCategory(String category, Integer pageNumber);
 
-    ResponseEntity<GarageApiResponse> searchGarages(String query);
+    ResponseEntity<GarageApiResponse> searchGarages(Integer pageNumber, String query, String vehicleMake, String vehicleModel, Integer mileage, Integer previousOwnersCount, Integer enginePower, Integer topSpeed, Integer acceleration, String transmissionType, String driveTrain, String enginePosition, String engineLayout, String engineAspiration, String bodyType);
 
     ResponseEntity<GarageApiResponse> deleteGarage(String id);
 
