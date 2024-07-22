@@ -2,6 +2,7 @@ package com.dreamwheels.dreamwheels.garage.entity;
 
 import com.dreamwheels.dreamwheels.garage.enums.EngineAspiration;
 import com.dreamwheels.dreamwheels.garage.enums.FuelType;
+import com.dreamwheels.dreamwheels.garage.enums.GarageCategory;
 import com.dreamwheels.dreamwheels.garage.enums.TransmissionType;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -47,6 +48,9 @@ public class Garage {
 
     @Enumerated(EnumType.STRING)
     private TransmissionType transmissionType;
+
+    @Enumerated(EnumType.STRING)
+    private GarageCategory category;
 
     @Enumerated(value = EnumType.STRING)
     private FuelType fuelType;
