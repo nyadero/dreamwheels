@@ -25,4 +25,5 @@ public interface GarageService {
     ResponseEntity<GarageApiResponse> deleteGarage(String id);
 
 
+    ResponseEntity<GarageApiResponse> searchMotorbikeGarages();
 }
