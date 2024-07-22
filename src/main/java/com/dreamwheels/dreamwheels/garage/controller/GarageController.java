@@ -56,7 +56,6 @@ public class GarageController {
             @Valid @RequestBody MotorbikeGarageDto motorbikeGarageDto,
             BindingResult bindingResult
     ){
-        System.out.println(motorbikeGarageDto.getEngineAspiration());
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                     .stream()
