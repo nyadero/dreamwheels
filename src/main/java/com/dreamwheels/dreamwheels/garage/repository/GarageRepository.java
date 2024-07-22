@@ -1,6 +1,7 @@
 package com.dreamwheels.dreamwheels.garage.repository;
 
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
+import com.dreamwheels.dreamwheels.garage.enums.GarageCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,7 @@ public interface GarageRepository extends PagingAndSortingRepository<Garage, Str
 
     Optional<Garage> findByIdAndUserId(String id, String userId);
 
-    Page<Garage> findAllByCategory(String category, PageRequest pageRequest);
+    Page<Garage> findAllByCategory(GarageCategory category, PageRequest pageRequest);
 
     Page<Garage> findAll(Specification<Garage> vehiclesSpecification, Pageable pageable);
 }
