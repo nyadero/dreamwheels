@@ -1,0 +1,1 @@
+ALTER TABLE garages ADD COLUMN category(255);
