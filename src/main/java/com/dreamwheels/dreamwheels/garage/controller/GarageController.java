@@ -53,9 +53,10 @@ public class GarageController {
             description = "Saves a motorbike Garage to the database"
     )
     public ResponseEntity<GarageApiResponse> addMotorbikeGarage(
-            @RequestBody MotorbikeGarageDto motorbikeGarageDto,
+            @Valid @RequestBody MotorbikeGarageDto motorbikeGarageDto,
             BindingResult bindingResult
     ){
+        System.out.println(motorbikeGarageDto.getEngineAspiration());
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                     .stream()
