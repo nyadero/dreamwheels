@@ -1,9 +1,6 @@
 package com.dreamwheels.dreamwheels.garage.entity;
 
-import com.dreamwheels.dreamwheels.garage.enums.DriveTrain;
-import com.dreamwheels.dreamwheels.garage.enums.EngineAspiration;
-import com.dreamwheels.dreamwheels.garage.enums.EngineLayout;
-import com.dreamwheels.dreamwheels.garage.enums.EnginePosition;
+import com.dreamwheels.dreamwheels.garage.enums.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,8 +13,8 @@ import lombok.*;
 @Entity(name = "vehicle_garages")
 @Builder
 public class Vehicle extends Garage {
-    private String vehicleMake;
-    private String vehicleModel;
+    private VehicleMake vehicleMake;
+    private VehicleModel vehicleModel;
     @Enumerated(value = EnumType.STRING)
     private DriveTrain driveTrain;
     @Enumerated(value = EnumType.STRING)
@@ -25,5 +22,5 @@ public class Vehicle extends Garage {
     @Enumerated(value = EnumType.STRING)
     private EnginePosition enginePosition;
     @Enumerated(value = EnumType.STRING)
-    private EngineAspiration vehicleEngineAspiration;
+    private BodyType bodyType;
 }
