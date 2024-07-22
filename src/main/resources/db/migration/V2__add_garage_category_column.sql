@@ -1,1 +1,1 @@
-ALTER TABLE garages ADD COLUMN category(255);
+ALTER TABLE garages ADD COLUMN category VARCHAR(255);
