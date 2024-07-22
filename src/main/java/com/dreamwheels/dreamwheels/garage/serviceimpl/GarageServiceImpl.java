@@ -10,6 +10,7 @@ import com.dreamwheels.dreamwheels.garage.dtos.VehicleGarageDto;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.entity.Motorbike;
 import com.dreamwheels.dreamwheels.garage.entity.Vehicle;
+import com.dreamwheels.dreamwheels.garage.enums.*;
 import com.dreamwheels.dreamwheels.garage.repository.GarageRepository;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;
 import com.dreamwheels.dreamwheels.users.entity.User;
@@ -44,6 +45,15 @@ public class GarageServiceImpl implements GarageService {
         garage.setDescription(vehicleGarageDto.getDescription());
         garage.setBuyingPrice(vehicleGarageDto.getBuyingPrice());
         garage.setPreviousOwnersCount(vehicleGarageDto.getPreviousOwnersCount());
+        garage.setAcceleration(vehicleGarageDto.getAcceleration());
+        garage.setAcceleration(vehicleGarageDto.getAcceleration());
+        garage.setMileage(vehicleGarageDto.getMileage());
+        garage.setEnginePower(vehicleGarageDto.getEnginePower());
+        garage.setEngineAspiration(EngineAspiration.valueOf(vehicleGarageDto.getEngineAspiration()));
+        garage.setFuelType(FuelType.valueOf(vehicleGarageDto.getFuelType()));
+        garage.setTorque(vehicleGarageDto.getTorque());
+        garage.setTopSpeed(vehicleGarageDto.getTopSpeed());
+        garage.setTransmissionType(TransmissionType.valueOf(vehicleGarageDto.getTransmissionType()));
         garage.setUser(authenticatedUser());
 
         return new ResponseEntity<>(new GarageApiResponse(garageRepository.save(garage), "Your vehicle garage has been saved", ResponseType.SUCCESS),
@@ -87,11 +97,11 @@ public class GarageServiceImpl implements GarageService {
     public ResponseEntity<GarageApiResponse> updateVehicleGarage(VehicleGarageDto vehicleGarageDto, String id) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Vehicle vehicle){
-            vehicle.setVehicleMileage(vehicleGarageDto.getVehicleMileage());
-            vehicle.setVehicleMake(vehicleGarageDto.getVehicleMake());
-            vehicle.setVehicleModel(vehicleGarageDto.getVehicleModel());
-            vehicle.setVehicleFuelType(vehicleGarageDto.getVehicleFuelType());
-            vehicle.setVehicleTransmission(vehicleGarageDto.getVehicleTransmission());
+
+//            vehicle.setVehicleMake(vehicleGarageDto.getVehicleMake());
+//            vehicle.setVehicleModel(vehicleGarageDto.getVehicleModel());
+//            vehicle.setVehicleFuelType(vehicleGarageDto.getVehicleFuelType());
+//            vehicle.setVehicleTransmission(vehicleGarageDto.getVehicleTransmission());
             vehicle.setName(vehicleGarageDto.getName());
             vehicle.setDescription(vehicleGarageDto.getDescription());
             vehicle.setBuyingPrice(vehicleGarageDto.getBuyingPrice());
@@ -111,11 +121,11 @@ public class GarageServiceImpl implements GarageService {
             motorbike.setDescription(motorbikeGarageDto.getDescription());
             motorbike.setBuyingPrice(motorbikeGarageDto.getBuyingPrice());
             motorbike.setPreviousOwnersCount(motorbikeGarageDto.getPreviousOwnersCount());
-            motorbike.setMotorbikeMileage(String.valueOf(motorbikeGarageDto.getMotorbikeMileage()));
-            motorbike.setMotorbikeMake(motorbikeGarageDto.getMotorbikeMake());
-            motorbike.setMotorbikeModel(motorbikeGarageDto.getMotorbikeModel());
-            motorbike.setMotorbikeFuelType(motorbikeGarageDto.getMotorbikeFuelType());
-            motorbike.setMotorbikeTransmission(motorbikeGarageDto.getMotorbikeTransmission());
+//            motorbike.setMotorbikeMileage(String.valueOf(motorbikeGarageDto.getMotorbikeMileage()));
+//            motorbike.setMotorbikeMake(motorbikeGarageDto.getMotorbikeMake());
+//            motorbike.setMotorbikeModel(motorbikeGarageDto.getMotorbikeModel());
+//            motorbike.setMotorbikeFuelType(motorbikeGarageDto.getMotorbikeFuelType());
+//            motorbike.setMotorbikeTransmission(motorbikeGarageDto.getMotorbikeTransmission());
 
             garageRepository.save(motorbike);
         }
@@ -133,6 +143,12 @@ public class GarageServiceImpl implements GarageService {
     }
 
     @Override
+    public ResponseEntity<GarageApiResponse> searchMotorbikeGarages() {
+        return null;
+    }
+
+
+    @Override
     @TryCatchAnnotation
     public ResponseEntity<GarageApiResponse> deleteGarage(String id) {
         Garage garage = garageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
@@ -141,23 +157,25 @@ public class GarageServiceImpl implements GarageService {
     }
 
 
+
     private Garage newVehiclegarage(VehicleGarageDto vehicleGarageDto) {
         Vehicle vehicle = new Vehicle();
-        vehicle.setVehicleMileage(vehicleGarageDto.getVehicleMileage());
-        vehicle.setVehicleMake(vehicleGarageDto.getVehicleMake());
-        vehicle.setVehicleModel(vehicleGarageDto.getVehicleModel());
-        vehicle.setVehicleFuelType(vehicleGarageDto.getVehicleFuelType());
-        vehicle.setVehicleTransmission(vehicleGarageDto.getVehicleTransmission());
+        vehicle.setVehicleMake(VehicleMake.fromString(vehicleGarageDto.getVehicleMake()));
+        vehicle.setVehicleModel(VehicleModel.valueOf(vehicleGarageDto.getVehicleModel()));
+        vehicle.setDriveTrain(DriveTrain.valueOf(vehicleGarageDto.getDriveTrain()));
+        vehicle.setBodyType(BodyType.valueOf(vehicleGarageDto.getBodyType()));
+        vehicle.setEngineLayout(EngineLayout.valueOf(vehicleGarageDto.getEngineLayout()));
+        vehicle.setEnginePosition(EnginePosition.valueOf(vehicleGarageDto.getEnginePosition()));
         return vehicle;
     }
 
     private Garage newMotorbikegarage(MotorbikeGarageDto motorbikeGarageDto) {
         Motorbike motorbike = new Motorbike();
-        motorbike.setMotorbikeMileage(String.valueOf(motorbikeGarageDto.getMotorbikeMileage()));
-        motorbike.setMotorbikeMake(motorbikeGarageDto.getMotorbikeMake());
-        motorbike.setMotorbikeModel(motorbikeGarageDto.getMotorbikeModel());
-        motorbike.setMotorbikeFuelType(motorbikeGarageDto.getMotorbikeFuelType());
-        motorbike.setMotorbikeTransmission(motorbikeGarageDto.getMotorbikeTransmission());
+//        motorbike.setMotorbikeMileage(String.valueOf(motorbikeGarageDto.getMotorbikeMileage()));
+//        motorbike.setMotorbikeMake(motorbikeGarageDto.getMotorbikeMake());
+//        motorbike.setMotorbikeModel(motorbikeGarageDto.getMotorbikeModel());
+//        motorbike.setMotorbikeFuelType(motorbikeGarageDto.getMotorbikeFuelType());
+//        motorbike.setMotorbikeTransmission(motorbikeGarageDto.getMotorbikeTransmission());
         return motorbike;
     }
 
