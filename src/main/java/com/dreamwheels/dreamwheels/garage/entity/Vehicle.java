@@ -13,7 +13,9 @@ import lombok.*;
 @Entity(name = "vehicle_garages")
 @Builder
 public class Vehicle extends Garage {
-    private VehicleMake vehicleMake;
+//    @Enumerated(EnumType.STRING)
+    private String vehicleMake;
+    @Enumerated(EnumType.STRING)
     private VehicleModel vehicleModel;
     @Enumerated(value = EnumType.STRING)
     private DriveTrain driveTrain;
