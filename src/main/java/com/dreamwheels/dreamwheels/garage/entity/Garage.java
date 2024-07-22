@@ -1,5 +1,6 @@
 package com.dreamwheels.dreamwheels.garage.entity;
 
+import com.dreamwheels.dreamwheels.garage.enums.EngineAspiration;
 import com.dreamwheels.dreamwheels.garage.enums.FuelType;
 import com.dreamwheels.dreamwheels.garage.enums.TransmissionType;
 import com.dreamwheels.dreamwheels.users.entity.User;
@@ -49,6 +50,9 @@ public class Garage {
 
     @Enumerated(value = EnumType.STRING)
     private FuelType fuelType;
+
+    @Enumerated(value = EnumType.STRING)
+    private EngineAspiration engineAspiration;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     @JoinColumn(name = "userId", foreignKey = @ForeignKey(name = "FK_USER_ID"))
