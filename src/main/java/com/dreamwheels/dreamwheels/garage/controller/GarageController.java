@@ -147,17 +147,31 @@ public class GarageController {
         return garageService.garagesByCategory(category);
     }
 
-    // search Garages
-    @GetMapping("/search")
+    // search vehicle Garages
+    @GetMapping("/vehicles/search")
     @Operation(
-            summary = "Search Garages",
-            description = "Fetches and returns Garages matching a given criteria"
+            summary = "Search vehicle garages",
+            description = "Fetches and returns vehicle garages matching a given criteria"
     )
     public ResponseEntity<GarageApiResponse> searchGarages(
             @RequestParam(name = "query") String query
     ){
         return garageService.searchGarages(query);
     }
+
+
+    // search motorbike garages
+    @GetMapping("/motorbikes/search")
+    @Operation(
+            summary = "Search motorbike garages",
+            description = "Fetches and returns motorbike garages matching a given criteria"
+    )
+    public ResponseEntity<GarageApiResponse> searchMotorbikeGarages(
+
+    ){
+        return garageService.searchMotorbikeGarages();
+    }
+
 
     // delete Garage
     @DeleteMapping("/{id}")
