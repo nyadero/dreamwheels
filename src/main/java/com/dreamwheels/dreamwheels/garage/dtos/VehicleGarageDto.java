@@ -8,7 +8,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Range;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -83,5 +86,20 @@ public class VehicleGarageDto {
     @NotEmpty(message = "Vehicle transmission type is required")
     @EnumValidation(enumClass = TransmissionType.class, message = "Invalid transmission type")
     private String transmissionType;
+
+    // general files
+    private List<MultipartFile> general = new ArrayList<>(0);
+
+    // interior files
+    private List<MultipartFile> interior = new ArrayList<>(0);
+
+    // exterior files
+    private List<MultipartFile> exterior = new ArrayList<>(0);
+
+    // mechanical files
+    private List<MultipartFile> mechanical = new ArrayList<>(0);
+
+    // document files
+    private List<MultipartFile> documents = new ArrayList<>(0);
 
 }
