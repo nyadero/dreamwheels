@@ -283,6 +283,14 @@ public class GarageServiceImpl implements GarageService {
     ) {
         Specification<Garage> garageSpecification = Specification.where(null);
 
+        // name
+        if (name != null && !name.isEmpty()){
+            garageSpecification = garageSpecification.and((root, query, criteriaBuilder) -> {
+                System.out.println(criteriaBuilder.like(root.get("name"), name));
+                return criteriaBuilder.like(root.get("name"), name);
+            });
+        }
+
         // if make is not null
         if (motorbikeMake != null && !motorbikeMake.isEmpty()){
              garageSpecification = garageSpecification.and((root, query, criteriaBuilder) ->
@@ -416,6 +424,5 @@ public class GarageServiceImpl implements GarageService {
     private static String applicationUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
-
 
 }
