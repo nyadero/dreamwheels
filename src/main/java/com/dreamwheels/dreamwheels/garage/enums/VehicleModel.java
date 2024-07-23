@@ -4,5 +4,6 @@ public enum VehicleModel {
   DBX,
     Vanguish,
     M3,
-  Wrx
+  Wrx,
+  Dakar
 }
