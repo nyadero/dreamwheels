@@ -88,18 +88,18 @@ public class VehicleGarageDto {
     private String transmissionType;
 
     // general files
-    private List<MultipartFile> general = new ArrayList<>(0);
+    private List<MultipartFile> generalFiles = new ArrayList<>(0);
 
     // interior files
-    private List<MultipartFile> interior = new ArrayList<>(0);
+    private List<MultipartFile> interiorFiles = new ArrayList<>(0);
 
     // exterior files
-    private List<MultipartFile> exterior = new ArrayList<>(0);
+    private List<MultipartFile> exteriorFiles = new ArrayList<>(0);
 
     // mechanical files
-    private List<MultipartFile> mechanical = new ArrayList<>(0);
+    private List<MultipartFile> mechanicalFiles = new ArrayList<>(0);
 
     // document files
-    private List<MultipartFile> documents = new ArrayList<>(0);
+    private List<MultipartFile> documentFiles = new ArrayList<>(0);
 
 }
