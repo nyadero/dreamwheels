@@ -8,8 +8,13 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@Setter
 public class MotorbikeGarageDto {
     @NotEmpty(message = "Motorbike name is required")
     private String name;
@@ -68,4 +73,16 @@ public class MotorbikeGarageDto {
     @NotEmpty(message = "Motorbike transmission type is required")
     @EnumValidation(enumClass = TransmissionType.class, message = "Invalid transmission type")
     private String transmissionType;
+
+    // general files
+    private  List<MultipartFile> generalFiles = new ArrayList<>(0);
+
+    // exterior files
+    private  List<MultipartFile> exteriorFiles = new ArrayList<>(0);
+
+    // mechanical files
+    private  List<MultipartFile> mechanicalFiles = new ArrayList<>(0);
+
+    // document files
+    private  List<MultipartFile> documentFiles = new ArrayList<>(0);
 }
