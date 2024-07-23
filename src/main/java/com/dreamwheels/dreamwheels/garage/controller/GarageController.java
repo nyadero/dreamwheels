@@ -6,8 +6,10 @@ import com.dreamwheels.dreamwheels.garage.dtos.MotorbikeGarageDto;
 import com.dreamwheels.dreamwheels.garage.dtos.VehicleGarageDto;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -32,7 +34,8 @@ public class GarageController {
             description = "Saves a vehicle Garage to the database"
     )
     public ResponseEntity<GarageApiResponse> addVehicleGarage(
-            @Valid @RequestBody VehicleGarageDto vehicleGarageDto,
+            HttpServletRequest httpRequest,
+            @Valid @ModelAttribute VehicleGarageDto vehicleGarageDto,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
@@ -42,7 +45,7 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.addVehicleGarage(vehicleGarageDto);
+        return garageService.addVehicleGarage(vehicleGarageDto, httpRequest);
     }
 
     // add motorbike Garage
@@ -53,7 +56,8 @@ public class GarageController {
             description = "Saves a motorbike Garage to the database"
     )
     public ResponseEntity<GarageApiResponse> addMotorbikeGarage(
-            @Valid @RequestBody MotorbikeGarageDto motorbikeGarageDto,
+            HttpServletRequest httpServletRequest,
+            @Valid @ModelAttribute MotorbikeGarageDto motorbikeGarageDto,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
@@ -63,7 +67,7 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.addMotorbikeGarage(motorbikeGarageDto);
+        return garageService.addMotorbikeGarage(motorbikeGarageDto, httpServletRequest);
     }
 
     // get all Garages
@@ -99,7 +103,8 @@ public class GarageController {
             description = "Fetches and returns a Garage by its id"
     )
     public ResponseEntity<GarageApiResponse> updateVehicleGarage(
-            @RequestBody VehicleGarageDto vehicleGarageDto,
+            HttpServletRequest httpRequest,
+            @Valid @ModelAttribute VehicleGarageDto vehicleGarageDto,
             @PathVariable("id") String id,
             BindingResult bindingResult
     ){
@@ -110,7 +115,7 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.updateVehicleGarage(vehicleGarageDto, id);
+        return garageService.updateVehicleGarage(vehicleGarageDto, id, httpRequest);
     }
 
     // update motorbike Garage
@@ -121,7 +126,8 @@ public class GarageController {
             description = "Updates a motorbike Garage"
     )
     public ResponseEntity<GarageApiResponse> updateMotorbikeGarage(
-            @RequestBody MotorbikeGarageDto motorbikeGarageDto,
+            HttpServletRequest httpServletRequest,
+            @Valid @ModelAttribute MotorbikeGarageDto motorbikeGarageDto,
             @PathVariable("id") String id,
             BindingResult bindingResult
     ){
@@ -132,7 +138,7 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.updateMotorbikeGarage(motorbikeGarageDto, id);
+        return garageService.updateMotorbikeGarage(motorbikeGarageDto, id, httpServletRequest);
     }
 
     // get Garages by category
@@ -142,9 +148,10 @@ public class GarageController {
             description = "Fetches and returns Garages by their category ie motorbike, vehicle etc"
     )
     public ResponseEntity<GarageApiResponse> GaragesByCategory(
-            @PathVariable("category") String category
+            @PathVariable("category") String category,
+            @RequestParam(name="pageNumber", defaultValue = "0") Integer pageNumber
     ){
-        return garageService.garagesByCategory(category);
+        return garageService.garagesByCategory(category, pageNumber);
     }
 
     // search vehicle Garages
@@ -154,9 +161,26 @@ public class GarageController {
             description = "Fetches and returns vehicle garages matching a given criteria"
     )
     public ResponseEntity<GarageApiResponse> searchGarages(
-            @RequestParam(name = "query") String query
+            @RequestParam(name="pageNumber", defaultValue = "0", required = true) Integer pageNumber,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "vehicleMake", required = false) String vehicleMake,
+            @RequestParam(name = "vehicleModel", required = false) String vehicleModel,
+            @RequestParam(name = "mileage", required = false) Integer mileage,
+            @RequestParam(name="previousOwnersCount", required = false) Integer previousOwnersCount,
+            @RequestParam(name="enginePower", required = false) Integer enginePower,
+            @RequestParam(name="topSpeed", required = false) Integer topSpeed,
+            @RequestParam(name="acceleration", required = false) Integer acceleration,
+            @RequestParam(name = "transmissionType", required = false) String transmissionType,
+            @RequestParam(name = "driveTrain", required = false) String driveTrain,
+            @RequestParam(name = "enginePosition", required = false) String enginePosition,
+            @RequestParam(name = "engineLayout", required = false) String engineLayout,
+            @RequestParam(name = "engineAspiration", required = false) String engineAspiration,
+            @RequestParam(name = "bodyType", required = false) String bodyType
     ){
-        return garageService.searchGarages(query);
+        return garageService.searchGarages(
+                pageNumber, name, vehicleMake, vehicleModel, mileage, previousOwnersCount, enginePower, topSpeed, acceleration,
+                transmissionType, driveTrain, enginePosition, engineLayout, engineAspiration, bodyType
+        );
     }
 
 
@@ -167,11 +191,25 @@ public class GarageController {
             description = "Fetches and returns motorbike garages matching a given criteria"
     )
     public ResponseEntity<GarageApiResponse> searchMotorbikeGarages(
-
+            @RequestParam(name="pageNumber", defaultValue = "0", required = true) Integer pageNumber,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "motorbikeMake", required = false) String motorbikeMake,
+            @RequestParam(name = "motorbikeModel", required = false) String motorbikeModel,
+            @RequestParam(name = "motorbikeCategory", required = false) String motorbikeCategory,
+            @RequestParam(name = "mileage", required = false) Integer mileage,
+            @RequestParam(name="previousOwnersCount", required = false) Integer previousOwnersCount,
+            @RequestParam(name="enginePower", required = false) Integer enginePower,
+            @RequestParam(name="topSpeed", required = false) Integer topSpeed,
+            @RequestParam(name="acceleration", required = false) Integer acceleration,
+            @RequestParam(name = "transmissionType", required = false) String transmissionType,
+            @RequestParam(name = "engineLayout", required = false) String engineLayout,
+            @RequestParam(name = "engineAspiration", required = false) String engineAspiration
     ){
-        return garageService.searchMotorbikeGarages();
+        return garageService.searchMotorbikeGarages(
+                pageNumber, name, motorbikeCategory, motorbikeModel, motorbikeCategory, mileage, previousOwnersCount,
+                enginePower, topSpeed, acceleration, transmissionType, engineAspiration, engineLayout
+        );
     }
-
 
     // delete Garage
     @DeleteMapping("/{id}")
