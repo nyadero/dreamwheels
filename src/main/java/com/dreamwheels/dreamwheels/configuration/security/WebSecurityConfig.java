@@ -26,7 +26,9 @@ public class WebSecurityConfig {
             //            open api
             "/swagger-ui/v3/api-docs/**", "/swagger-ui/**",
             // auth
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            // file uploads endpoints
+            "/api/v1/uploads/**",
     };
 
     private static final String[] SWAGGER_WHITELIST = {
