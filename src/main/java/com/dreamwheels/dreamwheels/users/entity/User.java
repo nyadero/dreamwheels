@@ -81,17 +81,17 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonManagedReference
-//    @JsonIgnore
+    @JsonIgnore
     private List<Garage> garages = new ArrayList<>(0);
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-//    @JsonIgnore
+    @JsonIgnore
     private PasswordResetToken passwordResetToken;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-//    @JsonIgnore
+    @JsonIgnore
     private VerificationToken verificationToken;
 
     @CreationTimestamp
