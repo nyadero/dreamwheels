@@ -26,7 +26,5 @@ public interface GarageService {
     ResponseEntity<GarageApiResponse> deleteGarage(String id);
 
 
-    ResponseEntity<GarageApiResponse> searchMotorbikeGarages();
-
     ResponseEntity<GarageApiResponse> searchMotorbikeGarages(Integer pageNumber, String name, String motorbikeMake, String motorbikeModel, String motorbikeCategory1, Integer mileage, Integer previousOwnersCount, Integer enginePower, Integer topSpeed, Integer acceleration, String transmissionType, String engineAspiration, String engineLayout);
 }
