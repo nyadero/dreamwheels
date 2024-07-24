@@ -1,27 +1,30 @@
 package com.dreamwheels.dreamwheels.auth.service;
 
 import com.dreamwheels.dreamwheels.auth.dtos.*;
+import com.dreamwheels.dreamwheels.auth.entity.PasswordResetToken;
+import com.dreamwheels.dreamwheels.auth.entity.VerificationToken;
+import com.dreamwheels.dreamwheels.auth.response.SigninResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
-    ResponseEntity<GarageApiResponse> registerUser(RegisterRequest registerRequest, HttpServletRequest request);
+    ResponseEntity<GarageApiResponse<User>> registerUser(RegisterRequest registerRequest, HttpServletRequest request);
 
-    ResponseEntity<GarageApiResponse> validateVerificationToken(String token);
+    ResponseEntity<GarageApiResponse<User>> validateVerificationToken(String token);
 
-    ResponseEntity<GarageApiResponse> generateNewToken(String oldToken, HttpServletRequest request);
+    ResponseEntity<GarageApiResponse<VerificationToken>> generateNewToken(String oldToken, HttpServletRequest request);
 
-    ResponseEntity<GarageApiResponse> forgotPassword(ForgotPasswordRequest email, HttpServletRequest request);
+    ResponseEntity<GarageApiResponse<User>> forgotPassword(ForgotPasswordRequest email, HttpServletRequest request);
 
-    ResponseEntity<GarageApiResponse> resetPassword(String token, ResetPasswordRequest resetPasswordRequest);
+    ResponseEntity<GarageApiResponse<PasswordResetToken>> resetPassword(String token, ResetPasswordRequest resetPasswordRequest);
 
-    ResponseEntity<GarageApiResponse> signinUser(SigninRequest signinRequest);
+    ResponseEntity<GarageApiResponse<SigninResponse>> signinUser(SigninRequest signinRequest);
 
-    ResponseEntity<GarageApiResponse> updatePassword(UpdatePasswordRequest updatePasswordModel);
+    ResponseEntity<GarageApiResponse<User>> updatePassword(UpdatePasswordRequest updatePasswordModel);
 
-    ResponseEntity<GarageApiResponse> deleteAccount();
+    ResponseEntity<GarageApiResponse<Void>> deleteAccount();
 
     void saveVerificationToken(User user, String token);
 

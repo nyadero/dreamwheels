@@ -2,6 +2,7 @@ package com.dreamwheels.dreamwheels.users.serviceimpl;
 
 import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundException;
 import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
+import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
 import com.dreamwheels.dreamwheels.users.entity.User;
@@ -25,13 +26,13 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<GarageApiResponse> allUsers() {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         List<User> users = userRepository.findAll(sort);
-        return new ResponseEntity<>(new GarageApiResponse(users, "Found " + users.size() + " users", ResponseType.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(users), "Found " + users.size() + " users", ResponseType.SUCCESS), HttpStatus.OK);
     }
 
     @Override
     @TryCatchAnnotation
     public ResponseEntity<GarageApiResponse> userById(String id) {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
-        return new ResponseEntity<>(new GarageApiResponse(user, "Found user", ResponseType.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(user), "Found user", ResponseType.SUCCESS), HttpStatus.OK);
     }
 }

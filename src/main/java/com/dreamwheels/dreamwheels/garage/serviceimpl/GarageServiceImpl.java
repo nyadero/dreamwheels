@@ -3,6 +3,7 @@ package com.dreamwheels.dreamwheels.garage.serviceimpl;
 import com.dreamwheels.dreamwheels.auth.repository.AuthRepository;
 import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundException;
 import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
+import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
 import com.dreamwheels.dreamwheels.garage.dtos.MotorbikeGarageDto;
@@ -51,7 +52,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> addVehicleGarage(VehicleGarageDto vehicleGarageDto, HttpServletRequest httpRequest) {
+    public ResponseEntity<GarageApiResponse<Garage>> addVehicleGarage(VehicleGarageDto vehicleGarageDto, HttpServletRequest httpRequest) {
         Garage garage = null;
         garage = newVehiclegarage(vehicleGarageDto);
         garage.setName(vehicleGarageDto.getName());
@@ -74,13 +75,13 @@ public class GarageServiceImpl implements GarageService {
         uploadVehicleFiles(vehicleGarageDto, saved, httpRequest);
         saved.setGarageFiles(uploadedFileEventListener.getUploadedFiles());
 
-        return new ResponseEntity<>(new GarageApiResponse(saved, "Your vehicle garage has been saved", ResponseType.SUCCESS),
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<Garage>(saved), "Your vehicle garage has been saved", ResponseType.SUCCESS),
                 HttpStatus.CREATED);
     }
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> addMotorbikeGarage(
+    public ResponseEntity<GarageApiResponse<Garage>> addMotorbikeGarage(
             MotorbikeGarageDto motorbikeGarageDto,
             HttpServletRequest httpRequest
     ) {
@@ -106,29 +107,29 @@ public class GarageServiceImpl implements GarageService {
         uploadMotorbikeFiles(motorbikeGarageDto, httpRequest, saved);
         saved.setGarageFiles(uploadedFileEventListener.getUploadedFiles());
 
-        return new ResponseEntity<>(new GarageApiResponse(saved, "Your motorbike garage has been saved", ResponseType.SUCCESS),
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<Garage>(saved), "Your motorbike garage has been saved", ResponseType.SUCCESS),
                 HttpStatus.CREATED);
     }
 
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> allGarages(int pageNumber) {
+    public ResponseEntity<GarageApiResponse<Page<Garage>>> allGarages(int pageNumber) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<Garage> garagesPage = garageRepository.findAll(pageRequest);
-        return new ResponseEntity<>(new GarageApiResponse(garagesPage, "Found " + garagesPage.getTotalElements() + " garages", ResponseType.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(garagesPage), "Found " + garagesPage.getTotalElements() + " garages", ResponseType.SUCCESS), HttpStatus.OK);
     }
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> getGarageById(String id) {
+    public ResponseEntity<GarageApiResponse<Garage>> getGarageById(String id) {
         Garage garage = garageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
-        return new ResponseEntity<>(new GarageApiResponse(garage, "Found garage", ResponseType.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(garage), "Found garage", ResponseType.SUCCESS), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<GarageApiResponse> updateVehicleGarage(VehicleGarageDto vehicleGarageDto, String id, HttpServletRequest httpRequest) {
+    public ResponseEntity<GarageApiResponse<Garage>> updateVehicleGarage(VehicleGarageDto vehicleGarageDto, String id, HttpServletRequest httpRequest) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Vehicle vehicle){
             vehicle.setName(vehicleGarageDto.getName());
@@ -157,11 +158,11 @@ public class GarageServiceImpl implements GarageService {
 
         }
 
-        return new ResponseEntity<>(new GarageApiResponse(null, "Vehicle garage updated successfully", ResponseType.SUCCESS), HttpStatus.CREATED);
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Vehicle garage updated successfully", ResponseType.SUCCESS), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<GarageApiResponse> updateMotorbikeGarage(MotorbikeGarageDto motorbikeGarageDto, String id, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<GarageApiResponse<Garage>> updateMotorbikeGarage(MotorbikeGarageDto motorbikeGarageDto, String id, HttpServletRequest httpServletRequest) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Motorbike motorbike){
             motorbike.setName(motorbikeGarageDto.getName());
@@ -184,17 +185,17 @@ public class GarageServiceImpl implements GarageService {
             Garage saved = garageRepository.save(motorbike);
             uploadMotorbikeFiles(motorbikeGarageDto, httpServletRequest, saved);
         }
-        return new ResponseEntity<>(new GarageApiResponse(null, "Motorbike garage updated successfully",ResponseType.SUCCESS), HttpStatus.CREATED);
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Motorbike garage updated successfully",ResponseType.SUCCESS), HttpStatus.CREATED);
     }
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> garagesByCategory(String category, Integer pageNumber) {
+    public ResponseEntity<GarageApiResponse<Page<Garage>>> garagesByCategory(String category, Integer pageNumber) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<Garage> garagePage = garageRepository.findAllByCategory(GarageCategory.valueOf(category), pageRequest);
-        return new ResponseEntity<>(new GarageApiResponse(
-                garagePage,
+        return new ResponseEntity<>(new GarageApiResponse<>(
+                new Data<>(garagePage),
                 "Found " + garagePage.getTotalElements(),
                 ResponseType.SUCCESS
         ), HttpStatus.OK);
@@ -202,7 +203,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> searchGarages(
+    public ResponseEntity<GarageApiResponse<Page<Garage>>> searchGarages(
             Integer pageNumber, String name, String vehicleMake, String vehicleModel, Integer mileage, Integer previousOwnersCount, Integer enginePower,
             Integer topSpeed, Integer acceleration, String transmissionType, String driveTrain, String enginePosition, String engineLayout, String engineAspiration, String bodyType
     ) {
@@ -267,8 +268,8 @@ public class GarageServiceImpl implements GarageService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<Garage> garagePage = garageRepository.findAll(vehiclesSpecification, pageRequest);
-        return new ResponseEntity<>(new GarageApiResponse(
-                garagePage,
+        return new ResponseEntity<>(new GarageApiResponse<>(
+                new Data<>(garagePage),
                 "Query returned " + garagePage.getTotalElements(),
                 ResponseType.SUCCESS
         ), HttpStatus.OK);
@@ -276,7 +277,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> searchMotorbikeGarages(
+    public ResponseEntity<GarageApiResponse<Page<Garage>>> searchMotorbikeGarages(
             Integer pageNumber, String name, String motorbikeMake, String motorbikeModel, String motorbikeCategory, Integer mileage,
             Integer previousOwnersCount, Integer enginePower, Integer topSpeed, Integer acceleration, String transmissionType,
             String engineAspiration, String engineLayout
@@ -330,7 +331,7 @@ public class GarageServiceImpl implements GarageService {
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<Garage> garagePage = garageRepository.findAll(garageSpecification, pageRequest);
         return new ResponseEntity<>(new GarageApiResponse(
-                garagePage,
+                new Data(garagePage),
                 "Query returned " + garagePage.getTotalElements(),
                 ResponseType.SUCCESS
         ), HttpStatus.OK);
@@ -338,12 +339,12 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public ResponseEntity<GarageApiResponse> deleteGarage(String id) {
+    public ResponseEntity<GarageApiResponse<Garage>> deleteGarage(String id) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         System.out.println(garage.getName());
         applicationEventPublisher.publishEvent(new UploadedFileEvent(garage, List.of(), UploadedFileEventType.Delete, authenticatedUser(), null, null, garage.getGarageFiles()));
         garageRepository.deleteById(garage.getId());
-        return new ResponseEntity<>(new GarageApiResponse(null, "garage deleted",ResponseType.SUCCESS), HttpStatus.OK);
+        return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "garage deleted",ResponseType.SUCCESS), HttpStatus.OK);
     }
 
     private Garage newVehiclegarage(VehicleGarageDto vehicleGarageDto) {

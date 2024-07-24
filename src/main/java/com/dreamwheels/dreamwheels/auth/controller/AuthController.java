@@ -1,9 +1,13 @@
 package com.dreamwheels.dreamwheels.auth.controller;
 
 import com.dreamwheels.dreamwheels.auth.dtos.*;
+import com.dreamwheels.dreamwheels.auth.entity.PasswordResetToken;
+import com.dreamwheels.dreamwheels.auth.entity.VerificationToken;
+import com.dreamwheels.dreamwheels.auth.response.SigninResponse;
 import com.dreamwheels.dreamwheels.auth.service.AuthService;
 import com.dreamwheels.dreamwheels.configuration.exceptions.ValidationException;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
+import com.dreamwheels.dreamwheels.users.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,7 +34,7 @@ public class AuthController {
             description = "sign up user"
     )
     @PostMapping("/signup")
-    public ResponseEntity<GarageApiResponse> signup(
+    public ResponseEntity<GarageApiResponse<User>> signup(
             @Valid @RequestBody RegisterRequest registerRequest,
             BindingResult bindingResult,
             HttpServletRequest request
@@ -51,7 +55,7 @@ public class AuthController {
             description = "verify user email after registration"
     )
     @GetMapping("/verify-registration")
-    public ResponseEntity<GarageApiResponse>verifyRegistration(@RequestParam("token") String token){
+    public ResponseEntity<GarageApiResponse<User>>verifyRegistration(@RequestParam("token") String token){
         return authenticationService.validateVerificationToken(token);
     }
 
@@ -61,7 +65,7 @@ public class AuthController {
             description = "regenerate user verification token"
     )
     @GetMapping("/resend-verification-token")
-    public ResponseEntity<GarageApiResponse> resendVerificationToken(
+    public ResponseEntity<GarageApiResponse<VerificationToken>> resendVerificationToken(
             @RequestParam("token") String oldToken,
             HttpServletRequest request
     ){
@@ -74,7 +78,7 @@ public class AuthController {
             description = "sign in user"
     )
     @PostMapping("/signin")
-    public ResponseEntity<GarageApiResponse> signinUser(
+    public ResponseEntity<GarageApiResponse<SigninResponse>> signinUser(
             @Valid @RequestBody SigninRequest signinRequest,
             BindingResult bindingResult
     ){
@@ -94,7 +98,7 @@ public class AuthController {
             description = "send forgot password request"
     )
     @PostMapping("/forgot-password")
-    public ResponseEntity<GarageApiResponse> forgotPassword(
+    public ResponseEntity<GarageApiResponse<User>> forgotPassword(
             @RequestBody ForgotPasswordRequest forgotPasswordRequest,
             BindingResult bindingResult,
             HttpServletRequest request
@@ -115,7 +119,7 @@ public class AuthController {
             description = "reset password"
     )
     @PostMapping("/reset-password")
-    public ResponseEntity<GarageApiResponse>resetPassword(
+    public ResponseEntity<GarageApiResponse<PasswordResetToken>>resetPassword(
             @RequestParam String token,
             @RequestBody ResetPasswordRequest resetPasswordRequest,
             BindingResult bindingResult
@@ -137,7 +141,7 @@ public class AuthController {
     )
     @PreAuthorize("isAuthenticated()") // access authenticated user details in service implementation
     @PutMapping("/update-password")
-    public ResponseEntity<GarageApiResponse> updatePassword(
+    public ResponseEntity<GarageApiResponse<User>> updatePassword(
             @RequestBody UpdatePasswordRequest updatePasswordModel,
             BindingResult bindingResult
     ){
@@ -152,7 +156,7 @@ public class AuthController {
     }
 
     // delete account
-    public ResponseEntity<GarageApiResponse> deleteAccount(
+    public ResponseEntity<GarageApiResponse<Void>> deleteAccount(
 
     ){
         return null;
