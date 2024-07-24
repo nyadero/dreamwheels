@@ -17,7 +17,8 @@ project that i am using to practice more advanced concepts i have learnt or plan
 
 ### TODOS
 - [X] Integrate flyway migrations
-- [ ] Files upload and deletion
+- [X] Local files upload and deletion 
+- [ ] Files upload to cloudinary
 - [ ] Implement Roles and permissions
 - [ ] Write unit tests
 - [ ] Caching
