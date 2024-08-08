@@ -29,6 +29,8 @@ public class WebSecurityConfig {
             "/api/v1/auth/**",
             // file uploads endpoints
             "/api/v1/uploads/**",
+            // comments
+            "/api/v1/comments/**"
     };
 
     private static final String[] SWAGGER_WHITELIST = {
