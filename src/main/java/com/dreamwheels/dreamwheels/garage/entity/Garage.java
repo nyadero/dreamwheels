@@ -1,5 +1,6 @@
 package com.dreamwheels.dreamwheels.garage.entity;
 
+import com.dreamwheels.dreamwheels.comments.entity.Comment;
 import com.dreamwheels.dreamwheels.garage.enums.EngineAspiration;
 import com.dreamwheels.dreamwheels.garage.enums.FuelType;
 import com.dreamwheels.dreamwheels.garage.enums.GarageCategory;
@@ -8,6 +9,10 @@ import com.dreamwheels.dreamwheels.uploaded_files.entity.UploadedFile;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +20,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +30,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity(name = "garages")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Garage {
+public class Garage implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,6 +55,10 @@ public class Garage {
 
     private int torque;
 
+    private int commentsCount;
+
+    private int likesCount;
+
     @Enumerated(EnumType.STRING)
     private TransmissionType transmissionType;
 
@@ -69,10 +79,18 @@ public class Garage {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "garage")
     private List<UploadedFile> garageFiles = new ArrayList<>(0);
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "garage")
+    @OrderBy(value = "createdAt")
+    private List<Comment> comments = new ArrayList<>();
+
     @CreationTimestamp
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime updatedAt;
 
 }
