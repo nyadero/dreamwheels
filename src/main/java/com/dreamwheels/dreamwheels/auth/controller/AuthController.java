@@ -6,12 +6,15 @@ import com.dreamwheels.dreamwheels.auth.entity.VerificationToken;
 import com.dreamwheels.dreamwheels.auth.response.SigninResponse;
 import com.dreamwheels.dreamwheels.auth.service.AuthService;
 import com.dreamwheels.dreamwheels.configuration.exceptions.ValidationException;
+import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
+import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -46,7 +49,10 @@ public class AuthController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return authenticationService.registerUser(registerRequest, request);
+        User registeredUser = authenticationService.registerUser(registerRequest, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new GarageApiResponse<>(new Data<>(registeredUser), "User registered", ResponseType.SUCCESS)
+        );
     }
 
     // verify email registration
@@ -55,8 +61,11 @@ public class AuthController {
             description = "verify user email after registration"
     )
     @GetMapping("/verify-registration")
-    public ResponseEntity<GarageApiResponse<User>>verifyRegistration(@RequestParam("token") String token){
-        return authenticationService.validateVerificationToken(token);
+    public ResponseEntity<GarageApiResponse<Void>>verifyRegistration(@RequestParam("token") String token){
+        authenticationService.validateVerificationToken(token);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(null, "Verification token sent to your email", ResponseType.SUCCESS)
+        );
     }
 
     // regenerate verification token
@@ -65,11 +74,14 @@ public class AuthController {
             description = "regenerate user verification token"
     )
     @GetMapping("/resend-verification-token")
-    public ResponseEntity<GarageApiResponse<VerificationToken>> resendVerificationToken(
+    public ResponseEntity<GarageApiResponse<Void>> resendVerificationToken(
             @RequestParam("token") String oldToken,
             HttpServletRequest request
     ){
-        return authenticationService.generateNewToken(oldToken, request);
+        authenticationService.generateNewToken(oldToken, request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(null, "new verification token sent to your email", ResponseType.SUCCESS)
+        );
     }
 
     // sign-in user
@@ -89,7 +101,10 @@ public class AuthController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return authenticationService.signinUser(signinRequest);
+        SigninResponse signinResponse = authenticationService.signinUser(signinRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(new Data<>(signinResponse), "Sign in successful", ResponseType.SUCCESS)
+        );
     }
 
     // forgot password
@@ -98,7 +113,7 @@ public class AuthController {
             description = "send forgot password request"
     )
     @PostMapping("/forgot-password")
-    public ResponseEntity<GarageApiResponse<User>> forgotPassword(
+    public ResponseEntity<GarageApiResponse<Void>> forgotPassword(
             @RequestBody ForgotPasswordRequest forgotPasswordRequest,
             BindingResult bindingResult,
             HttpServletRequest request
@@ -110,7 +125,10 @@ public class AuthController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return authenticationService.forgotPassword(forgotPasswordRequest, request);
+        authenticationService.forgotPassword(forgotPasswordRequest, request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(null, "Password reset token sent to your email", ResponseType.SUCCESS)
+        );
     }
 
     // reset password
@@ -119,7 +137,7 @@ public class AuthController {
             description = "reset password"
     )
     @PostMapping("/reset-password")
-    public ResponseEntity<GarageApiResponse<PasswordResetToken>>resetPassword(
+    public ResponseEntity<GarageApiResponse<Void>>resetPassword(
             @RequestParam String token,
             @RequestBody ResetPasswordRequest resetPasswordRequest,
             BindingResult bindingResult
@@ -131,7 +149,10 @@ public class AuthController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return authenticationService.resetPassword(token, resetPasswordRequest);
+        authenticationService.resetPassword(token, resetPasswordRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(null, "Password has been reset", ResponseType.SUCCESS)
+        );
     }
 
     //    update password
@@ -139,9 +160,9 @@ public class AuthController {
             summary = "update password",
             description = "updates user password"
     )
-    @PreAuthorize("isAuthenticated()") // access authenticated user details in service implementation
+    @PreAuthorize("isAuthenticated") // access authenticated user details in service implementation
     @PutMapping("/update-password")
-    public ResponseEntity<GarageApiResponse<User>> updatePassword(
+    public ResponseEntity<GarageApiResponse<Void>> updatePassword(
             @RequestBody UpdatePasswordRequest updatePasswordModel,
             BindingResult bindingResult
     ){
@@ -152,14 +173,24 @@ public class AuthController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return authenticationService.updatePassword(updatePasswordModel);
+        authenticationService.updatePassword(updatePasswordModel);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(null, "Password has been updated", ResponseType.SUCCESS)
+        );
     }
 
     // delete account
-    public ResponseEntity<GarageApiResponse<Void>> deleteAccount(
-
-    ){
-        return null;
+    @Operation(
+            summary = "delete account",
+            description = "delete your account and all info"
+    )
+    @PreAuthorize("isAuthenticated")
+    @PutMapping("/delete")
+    public ResponseEntity<GarageApiResponse<Void>> deleteAccount(){
+        authenticationService.deleteAccount();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(null, "Account deleted successfully", ResponseType.SUCCESS)
+        );
     }
 
 }
