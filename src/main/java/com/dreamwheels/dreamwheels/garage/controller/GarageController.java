@@ -1,7 +1,9 @@
 package com.dreamwheels.dreamwheels.garage.controller;
 
 import com.dreamwheels.dreamwheels.configuration.exceptions.ValidationException;
+import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
+import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
 import com.dreamwheels.dreamwheels.garage.dtos.MotorbikeGarageDto;
 import com.dreamwheels.dreamwheels.garage.dtos.VehicleGarageDto;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
@@ -11,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -46,9 +49,14 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.addVehicleGarage(vehicleGarageDto, httpRequest);
+        Garage garage = garageService.addVehicleGarage(vehicleGarageDto, httpRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new GarageApiResponse<>(new Data<>(garage), "Garage vehicle added", ResponseType.SUCCESS)
+        );
     }
 
+
+    
     // add motorbike Garage
     @PostMapping("/motorbike")
     @PreAuthorize("isAuthenticated")
@@ -68,22 +76,28 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.addMotorbikeGarage(motorbikeGarageDto, httpServletRequest);
+        Garage garage = garageService.addMotorbikeGarage(motorbikeGarageDto, httpServletRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new GarageApiResponse<>(new Data<>(garage), "Garage vehicle added", ResponseType.SUCCESS)
+        );
     }
 
     // get all Garages
-    @GetMapping("")
+    @GetMapping
     @Operation(
             summary = "get all Garages",
             description = "fetches and returns a page of Garages"
     )
-    @PreAuthorize("isAuthenticated")
     public ResponseEntity<GarageApiResponse<Page<Garage>>> allGarages(
             @RequestParam(name = "pageNumber", defaultValue = "0") int pageNumber
     ){
-        return garageService.allGarages(pageNumber);
+        Page<Garage> garages = garageService.allGarages(pageNumber);
+        System.out.println("garages " + garages);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new GarageApiResponse<>(new Data<>(garages), "Garages fetched", ResponseType.SUCCESS)
+        );
     }
-
+    
     // get Garage by id'
     @GetMapping("/{id}")
     @Operation(
@@ -93,15 +107,17 @@ public class GarageController {
     public ResponseEntity<GarageApiResponse<Garage>> getGarageById(
            @PathVariable("id") String id
     ){
-        return garageService.getGarageById(id);
+        Garage garage = garageService.getGarageById(id);
+        GarageApiResponse<Garage> response = new GarageApiResponse<>(new Data<>(garage), "Found garage", ResponseType.SUCCESS);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // update vehicle Garage
     @PutMapping("/vehicle/{id}")
     @PreAuthorize("isAuthenticated")
     @Operation(
-            summary = "Get Garage by id",
-            description = "Fetches and returns a Garage by its id"
+            summary = "update vehicle",
+            description = "Updates a motorbike Garage"
     )
     public ResponseEntity<GarageApiResponse<Garage>> updateVehicleGarage(
             HttpServletRequest httpRequest,
@@ -116,7 +132,10 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.updateVehicleGarage(vehicleGarageDto, id, httpRequest);
+        Garage garage = garageService.updateVehicleGarage(vehicleGarageDto, id, httpRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(new Data<>(garage), "Garage updated", ResponseType.SUCCESS)
+        );
     }
 
     // update motorbike Garage
@@ -139,7 +158,10 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        return garageService.updateMotorbikeGarage(motorbikeGarageDto, id, httpServletRequest);
+        Garage garage =  garageService.updateMotorbikeGarage(motorbikeGarageDto, id, httpServletRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(new Data<>(garage), "Motorbike updated", ResponseType.SUCCESS)
+        );
     }
 
     // get Garages by category
@@ -152,7 +174,10 @@ public class GarageController {
             @PathVariable("category") String category,
             @RequestParam(name="pageNumber", defaultValue = "0") Integer pageNumber
     ){
-        return garageService.garagesByCategory(category, pageNumber);
+        Page<Garage> garages = garageService.garagesByCategory(category, pageNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(new Data<>(garages), "Garage updated", ResponseType.SUCCESS)
+        );
     }
 
     // search vehicle Garages
@@ -178,9 +203,12 @@ public class GarageController {
             @RequestParam(name = "engineAspiration", required = false) String engineAspiration,
             @RequestParam(name = "bodyType", required = false) String bodyType
     ){
-        return garageService.searchGarages(
+        Page<Garage> garages = garageService.searchGarages(
                 pageNumber, name, vehicleMake, vehicleModel, mileage, previousOwnersCount, enginePower, topSpeed, acceleration,
                 transmissionType, driveTrain, enginePosition, engineLayout, engineAspiration, bodyType
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(new Data<>(garages), "Vehicle garages searched", ResponseType.SUCCESS)
         );
     }
 
@@ -206,9 +234,13 @@ public class GarageController {
             @RequestParam(name = "engineLayout", required = false) String engineLayout,
             @RequestParam(name = "engineAspiration", required = false) String engineAspiration
     ){
-        return garageService.searchMotorbikeGarages(
+
+        Page<Garage> garages = garageService.searchMotorbikeGarages(
                 pageNumber, name, motorbikeCategory, motorbikeModel, motorbikeCategory, mileage, previousOwnersCount,
                 enginePower, topSpeed, acceleration, transmissionType, engineAspiration, engineLayout
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(new Data<>(garages), "Motorbike garages searched", ResponseType.SUCCESS)
         );
     }
 
@@ -219,10 +251,14 @@ public class GarageController {
             summary = "delete Garage",
             description = "Deletes a Garage from the database"
     )
-    public ResponseEntity<GarageApiResponse<Garage>> deleteGarage(
+    public ResponseEntity<GarageApiResponse<Void>> deleteGarage(
             @PathVariable("id") String id
     ){
-        return garageService.deleteGarage(id);
+        garageService.deleteGarage(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new GarageApiResponse<>(null, "Garage deleted", ResponseType.SUCCESS)
+        );
     }
+
 
 }

@@ -30,7 +30,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity(name = "garages")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Garage implements Serializable {
+public class Garage{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -92,5 +92,6 @@ public class Garage implements Serializable {
      @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime updatedAt;
+
 
 }
