@@ -1,10 +1,10 @@
 package com.dreamwheels.dreamwheels.configuration.middleware;
 
 import com.dreamwheels.dreamwheels.configuration.exceptions.CustomException;
+import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundException;
 import com.dreamwheels.dreamwheels.configuration.exceptions.ValidationException;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -20,13 +20,11 @@ import java.time.LocalDateTime;
 @Aspect
 public class TryCatchMiddleware {
 
-    @SneakyThrows
     @Around("@annotation(com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation)")
     public Object handleException(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             Object result = joinPoint.proceed();
-            if (result instanceof ResponseEntity) {
-                ResponseEntity<?> responseEntity = (ResponseEntity<?>) result;
+            if (result instanceof ResponseEntity<?> responseEntity) {
                 if (responseEntity.getStatusCode().isError()) {
                     return responseEntity; // Return without caching
                 }
