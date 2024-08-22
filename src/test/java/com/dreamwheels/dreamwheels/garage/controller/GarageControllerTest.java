@@ -44,13 +44,11 @@ class GarageControllerTest {
         VehicleGarageDto vehicleGarageDto = new VehicleGarageDto();
         vehicleGarageDto.setVehicleMake("Porsche");
         vehicleGarageDto.setVehicleModel("911 Dakar");
-        vehicleGarageDto.setVehicleMileage(12000);
         vehicleGarageDto.setName("Porsche 911 Dakar");
         vehicleGarageDto.setDescription("Porsche 911 Dakar planning to go on a world tour with it");
-        vehicleGarageDto.setVehicleTransmission("Manual");
         vehicleGarageDto.setBuyingPrice(20_0000_000.00);
         vehicleGarageDto.setPreviousOwnersCount(1);
-        vehicleGarageDto.setVehicleFuelType("Petrol");
+
 
         mockMvc.perform(
                 post("/api/v1/garages/vehicle")
@@ -70,11 +68,8 @@ class GarageControllerTest {
         motorbikeGarageDto.setName("Ducati panigale");
         motorbikeGarageDto.setDescription("My fast ducati panigae v4");
         motorbikeGarageDto.setMotorbikeMake("Ducati");
-        motorbikeGarageDto.setMotorbikeMileage(10_000);
         motorbikeGarageDto.setMotorbikeModel("Panigale");
         motorbikeGarageDto.setBuyingPrice(3_200_000.00);
-        motorbikeGarageDto.setMotorbikeTransmission("Automatic");
-        motorbikeGarageDto.setMotorbikeFuelType("Petrol");
         motorbikeGarageDto.setPreviousOwnersCount(1);
 
         mockMvc.perform(
@@ -117,13 +112,10 @@ class GarageControllerTest {
         VehicleGarageDto vehicleGarageDto = new VehicleGarageDto();
         vehicleGarageDto.setVehicleMake("Porsche");
         vehicleGarageDto.setVehicleModel("911 Dakar");
-        vehicleGarageDto.setVehicleMileage(12000);
         vehicleGarageDto.setName("Porsche 911 Dakar edited");
         vehicleGarageDto.setDescription("Porsche 911 Dakar planning to go on a world tour with it edited");
-        vehicleGarageDto.setVehicleTransmission("Manual");
         vehicleGarageDto.setBuyingPrice(20_0000_000.00);
         vehicleGarageDto.setPreviousOwnersCount(1);
-        vehicleGarageDto.setVehicleFuelType("Petrol");
 
         mockMvc.perform(
                 put("/api/v1/garages/vehicle/acebe240-2799-4f3f-bcba-9de872010c66")
@@ -143,11 +135,8 @@ class GarageControllerTest {
         motorbikeGarageDto.setName("Ducati panigale edited");
         motorbikeGarageDto.setDescription("My fast ducati panigae v4");
         motorbikeGarageDto.setMotorbikeMake("Ducati");
-        motorbikeGarageDto.setMotorbikeMileage(10_000);
         motorbikeGarageDto.setMotorbikeModel("Panigale");
         motorbikeGarageDto.setBuyingPrice(3_200_000.00);
-        motorbikeGarageDto.setMotorbikeTransmission("Automatic");
-        motorbikeGarageDto.setMotorbikeFuelType("Petrol");
         motorbikeGarageDto.setPreviousOwnersCount(1);
 
         mockMvc.perform(
