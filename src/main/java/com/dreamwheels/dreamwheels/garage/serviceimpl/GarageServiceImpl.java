@@ -129,14 +129,6 @@ public class GarageServiceImpl implements GarageService {
         return garage;
     }
 
-//    @Override
-//    @TryCatchAnnotation
-////    @Cacheable(value = "garages", key = "#id", unless = "#result == null")
-//    public Garage getGarageById(String id) {
-//        return garageRepository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException("Garage not found"));
-//    }
-//
     @Override
     public Garage updateVehicleGarage(VehicleGarageDto vehicleGarageDto, String id, HttpServletRequest httpRequest) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
