@@ -15,14 +15,14 @@ public class GlobalExceptionHandler {
 
     // handle resource/entity not found exception
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<GarageApiResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
-        GarageApiResponse response = new GarageApiResponse(null, ex.getMessage(), ResponseType.ERROR);
+    public ResponseEntity<GarageApiResponse<?>> handleEntityNotFoundException(EntityNotFoundException ex) {
+        GarageApiResponse<Object> response = new GarageApiResponse<>(null, ex.getMessage(), ResponseType.ERROR);
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
     // handle validation exception
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<GarageApiResponse> handleValidationException(ValidationException ex) {
+    public ResponseEntity<GarageApiResponse<?>> handleValidationException(ValidationException ex) {
         GarageApiResponse<List<String>> response = new GarageApiResponse<>(new Data<>(ex.getErrors()), "Validation failed", ResponseType.ERROR);
 //        return ResponseEntity.badRequest().body(ex.getErrors());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -30,8 +30,8 @@ public class GlobalExceptionHandler {
 
     // handle generic exception
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<GarageApiResponse> handleGenericException(Exception ex) {
-        GarageApiResponse response = new GarageApiResponse(new Data(null), ex.getMessage(),  ResponseType.ERROR);
+    public ResponseEntity<GarageApiResponse<?>> handleGenericException(Exception ex) {
+        GarageApiResponse<?> response = new GarageApiResponse<>(new Data(null), ex.getMessage(),  ResponseType.ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
