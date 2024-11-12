@@ -30,17 +30,16 @@ public class WebSecurityConfig {
             // file uploads endpoints
             "/api/v1/uploads/**",
             // comments
-            "/api/v1/comments/**"
+            "/api/v1/comments/**",
+            "/admin/**"
     };
 
     private static final String[] SWAGGER_WHITELIST = {
-            // ... existing paths ...
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
             "/webjars/**",
             "/swagger-resources/**",
-            // ... other paths ...
     };
 
     @Autowired

@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-
 @Service
 public class JwtUtils {
     public static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
