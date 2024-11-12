@@ -43,21 +43,25 @@ public class User implements UserDetails {
     private Role role = Role.USER;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
         return email;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
@@ -68,6 +72,7 @@ public class User implements UserDetails {
         return true;
     }
 
+    
     @Override
     @JsonIgnore
     public boolean isCredentialsNonExpired() {
