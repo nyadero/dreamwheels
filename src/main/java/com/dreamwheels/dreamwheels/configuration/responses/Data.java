@@ -1,16 +1,16 @@
 package com.dreamwheels.dreamwheels.configuration.responses;
 
 public class Data<T> {
-    private T data;
+    private T results;
     public Data(T data) {
-        this.data = data;
+        this.results = data;
     }
 
     public T getData() {
-        return data;
+        return results;
     }
 
     public void setData(T data) {
-        this.data = data;
+        this.results = data;
     }
 }
