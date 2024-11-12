@@ -1,5 +1,6 @@
 package com.dreamwheels.dreamwheels;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @EnableAsync
 @EnableScheduling
 @EnableCaching
+//@EnableAdminServer
 public class Application {
 
 	public static void main(String[] args) {
@@ -26,7 +28,6 @@ public class Application {
 		System.setProperty("JWT_SECRET_KEY", Objects.requireNonNull(dotenv.get("JWT_SECRET_KEY")));
 		System.setProperty("JWT_EXPIRATION", Objects.requireNonNull(dotenv.get("JWT_EXPIRATION")));
 		System.setProperty("JWT_REFRESH_TOKEN_EXPIRATION", Objects.requireNonNull(dotenv.get("JWT_REFRESH_TOKEN_EXPIRATION")));
-
 
 		SpringApplication.run(Application.class, args);
 	}
