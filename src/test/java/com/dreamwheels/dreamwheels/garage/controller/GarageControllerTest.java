@@ -1,7 +1,7 @@
 package com.dreamwheels.dreamwheels.garage.controller;
 
-import com.dreamwheels.dreamwheels.garage.dtos.MotorbikeGarageDto;
-import com.dreamwheels.dreamwheels.garage.dtos.VehicleGarageDto;
+import com.dreamwheels.dreamwheels.garage.models.MotorbikeGarageModel;
+import com.dreamwheels.dreamwheels.garage.models.VehicleGarageModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -41,7 +40,7 @@ class GarageControllerTest {
 
     @Test
     void addVehicleGarage() throws Exception{
-        VehicleGarageDto vehicleGarageDto = new VehicleGarageDto();
+        VehicleGarageModel vehicleGarageDto = new VehicleGarageModel();
         vehicleGarageDto.setVehicleMake("Porsche");
         vehicleGarageDto.setVehicleModel("911 Dakar");
         vehicleGarageDto.setName("Porsche 911 Dakar");
@@ -64,7 +63,7 @@ class GarageControllerTest {
 
     @Test
     void addMotorbikeGarage() throws Exception {
-        MotorbikeGarageDto motorbikeGarageDto = new MotorbikeGarageDto();
+        MotorbikeGarageModel motorbikeGarageDto = new MotorbikeGarageModel();
         motorbikeGarageDto.setName("Ducati panigale");
         motorbikeGarageDto.setDescription("My fast ducati panigae v4");
         motorbikeGarageDto.setMotorbikeMake("Ducati");
@@ -109,7 +108,7 @@ class GarageControllerTest {
 
     @Test
     void updateVehicleGarage() throws Exception {
-        VehicleGarageDto vehicleGarageDto = new VehicleGarageDto();
+        VehicleGarageModel vehicleGarageDto = new VehicleGarageModel();
         vehicleGarageDto.setVehicleMake("Porsche");
         vehicleGarageDto.setVehicleModel("911 Dakar");
         vehicleGarageDto.setName("Porsche 911 Dakar edited");
@@ -131,7 +130,7 @@ class GarageControllerTest {
 
     @Test
     void updateMotorbikeGarage() throws Exception {
-        MotorbikeGarageDto motorbikeGarageDto = new MotorbikeGarageDto();
+        MotorbikeGarageModel motorbikeGarageDto = new MotorbikeGarageModel();
         motorbikeGarageDto.setName("Ducati panigale edited");
         motorbikeGarageDto.setDescription("My fast ducati panigae v4");
         motorbikeGarageDto.setMotorbikeMake("Ducati");
