@@ -1,4 +1,4 @@
-package com.dreamwheels.dreamwheels.garage.dtos;
+package com.dreamwheels.dreamwheels.garage.models;
 
 import com.dreamwheels.dreamwheels.configuration.middleware.EnumValidation;
 import com.dreamwheels.dreamwheels.garage.enums.*;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class MotorbikeGarageDto {
+public class MotorbikeGarageModel {
     @NotEmpty(message = "Motorbike name is required")
     private String name;
 

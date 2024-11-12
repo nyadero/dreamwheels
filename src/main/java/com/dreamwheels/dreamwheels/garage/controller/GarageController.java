@@ -1,11 +1,13 @@
 package com.dreamwheels.dreamwheels.garage.controller;
 
 import com.dreamwheels.dreamwheels.configuration.exceptions.ValidationException;
+import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
-import com.dreamwheels.dreamwheels.garage.dtos.MotorbikeGarageDto;
-import com.dreamwheels.dreamwheels.garage.dtos.VehicleGarageDto;
+import com.dreamwheels.dreamwheels.garage.dtos.GarageDto;
+import com.dreamwheels.dreamwheels.garage.models.MotorbikeGarageModel;
+import com.dreamwheels.dreamwheels.garage.models.VehicleGarageModel;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,9 +39,9 @@ public class GarageController {
             summary = "add a vehicle Garage",
             description = "Saves a vehicle Garage to the database"
     )
-    public ResponseEntity<GarageApiResponse<Garage>> addVehicleGarage(
+    public ResponseEntity<GarageApiResponse<GarageDto>> addVehicleGarage(
             HttpServletRequest httpRequest,
-            @Valid @ModelAttribute VehicleGarageDto vehicleGarageDto,
+            @Valid @ModelAttribute VehicleGarageModel vehicleGarageDto,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
@@ -49,14 +51,12 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        Garage garage = garageService.addVehicleGarage(vehicleGarageDto, httpRequest);
+        GarageDto garage = garageService.addVehicleGarage(vehicleGarageDto, httpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new GarageApiResponse<>(new Data<>(garage), "Garage vehicle added", ResponseType.SUCCESS)
         );
     }
 
-
-    
     // add motorbike Garage
     @PostMapping("/motorbike")
     @PreAuthorize("isAuthenticated")
@@ -64,9 +64,9 @@ public class GarageController {
             summary = "add a motorbike Garage",
             description = "Saves a motorbike Garage to the database"
     )
-    public ResponseEntity<GarageApiResponse<Garage>> addMotorbikeGarage(
+    public ResponseEntity<GarageApiResponse<GarageDto>> addMotorbikeGarage(
             HttpServletRequest httpServletRequest,
-            @Valid @ModelAttribute MotorbikeGarageDto motorbikeGarageDto,
+            @Valid @ModelAttribute MotorbikeGarageModel motorbikeGarageDto,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
@@ -76,7 +76,7 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        Garage garage = garageService.addMotorbikeGarage(motorbikeGarageDto, httpServletRequest);
+        GarageDto garage = garageService.addMotorbikeGarage(motorbikeGarageDto, httpServletRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new GarageApiResponse<>(new Data<>(garage), "Garage vehicle added", ResponseType.SUCCESS)
         );
@@ -88,12 +88,11 @@ public class GarageController {
             summary = "get all Garages",
             description = "fetches and returns a page of Garages"
     )
-    public ResponseEntity<GarageApiResponse<Page<Garage>>> allGarages(
+    public ResponseEntity<GarageApiResponse<CustomPageResponse<GarageDto>>> allGarages(
             @RequestParam(name = "pageNumber", defaultValue = "0") int pageNumber
     ){
-        Page<Garage> garages = garageService.allGarages(pageNumber);
-        System.out.println("garages " + garages);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        CustomPageResponse<GarageDto> garages = garageService.allGarages(pageNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(
                 new GarageApiResponse<>(new Data<>(garages), "Garages fetched", ResponseType.SUCCESS)
         );
     }
@@ -104,12 +103,11 @@ public class GarageController {
             summary = "Get Garage by id",
             description = "Fetches and returns a Garage by its id"
     )
-    public ResponseEntity<GarageApiResponse<Garage>> getGarageById(
+    public ResponseEntity<GarageApiResponse<GarageDto>> getGarageById(
            @PathVariable("id") String id
     ){
-        Garage garage = garageService.getGarageById(id);
-        GarageApiResponse<Garage> response = new GarageApiResponse<>(new Data<>(garage), "Found garage", ResponseType.SUCCESS);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        GarageDto garage = garageService.getGarageById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new GarageApiResponse<>(new Data<>(garage), "Found garage", ResponseType.SUCCESS));
     }
 
     // update vehicle Garage
@@ -119,9 +117,9 @@ public class GarageController {
             summary = "update vehicle",
             description = "Updates a motorbike Garage"
     )
-    public ResponseEntity<GarageApiResponse<Garage>> updateVehicleGarage(
+    public ResponseEntity<GarageApiResponse<GarageDto>> updateVehicleGarage(
             HttpServletRequest httpRequest,
-            @Valid @ModelAttribute VehicleGarageDto vehicleGarageDto,
+            @Valid @ModelAttribute VehicleGarageModel vehicleGarageDto,
             @PathVariable("id") String id,
             BindingResult bindingResult
     ){
@@ -132,7 +130,7 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        Garage garage = garageService.updateVehicleGarage(vehicleGarageDto, id, httpRequest);
+        GarageDto garage = garageService.updateVehicleGarage(vehicleGarageDto, id, httpRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new GarageApiResponse<>(new Data<>(garage), "Garage updated", ResponseType.SUCCESS)
         );
@@ -145,9 +143,9 @@ public class GarageController {
             summary = "update motorbike Garage",
             description = "Updates a motorbike Garage"
     )
-    public ResponseEntity<GarageApiResponse<Garage>> updateMotorbikeGarage(
+    public ResponseEntity<GarageApiResponse<GarageDto>> updateMotorbikeGarage(
             HttpServletRequest httpServletRequest,
-            @Valid @ModelAttribute MotorbikeGarageDto motorbikeGarageDto,
+            @Valid @ModelAttribute MotorbikeGarageModel motorbikeGarageDto,
             @PathVariable("id") String id,
             BindingResult bindingResult
     ){
@@ -158,7 +156,7 @@ public class GarageController {
                     .collect(Collectors.toList());
             throw new ValidationException(errors);
         }
-        Garage garage =  garageService.updateMotorbikeGarage(motorbikeGarageDto, id, httpServletRequest);
+        GarageDto garage =  garageService.updateMotorbikeGarage(motorbikeGarageDto, id, httpServletRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new GarageApiResponse<>(new Data<>(garage), "Motorbike updated", ResponseType.SUCCESS)
         );
@@ -170,11 +168,11 @@ public class GarageController {
             summary = "Get Garages by category",
             description = "Fetches and returns Garages by their category ie motorbike, vehicle etc"
     )
-    public ResponseEntity<GarageApiResponse<Page<Garage>>> GaragesByCategory(
+    public ResponseEntity<GarageApiResponse<CustomPageResponse<GarageDto>>> GaragesByCategory(
             @PathVariable("category") String category,
             @RequestParam(name="pageNumber", defaultValue = "0") Integer pageNumber
     ){
-        Page<Garage> garages = garageService.garagesByCategory(category, pageNumber);
+        CustomPageResponse<GarageDto> garages = garageService.garagesByCategory(category, pageNumber);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new GarageApiResponse<>(new Data<>(garages), "Garage updated", ResponseType.SUCCESS)
         );
@@ -186,7 +184,7 @@ public class GarageController {
             summary = "Search vehicle garages",
             description = "Fetches and returns vehicle garages matching a given criteria"
     )
-    public ResponseEntity<GarageApiResponse<Page<Garage>>> searchGarages(
+    public ResponseEntity<GarageApiResponse<CustomPageResponse<GarageDto>>> searchGarages(
             @RequestParam(name="pageNumber", defaultValue = "0", required = true) Integer pageNumber,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "vehicleMake", required = false) String vehicleMake,
@@ -203,7 +201,7 @@ public class GarageController {
             @RequestParam(name = "engineAspiration", required = false) String engineAspiration,
             @RequestParam(name = "bodyType", required = false) String bodyType
     ){
-        Page<Garage> garages = garageService.searchGarages(
+        CustomPageResponse<GarageDto> garages = garageService.searchGarages(
                 pageNumber, name, vehicleMake, vehicleModel, mileage, previousOwnersCount, enginePower, topSpeed, acceleration,
                 transmissionType, driveTrain, enginePosition, engineLayout, engineAspiration, bodyType
         );
@@ -219,7 +217,7 @@ public class GarageController {
             summary = "Search motorbike garages",
             description = "Fetches and returns motorbike garages matching a given criteria"
     )
-    public ResponseEntity<GarageApiResponse<Page<Garage>>> searchMotorbikeGarages(
+    public ResponseEntity<GarageApiResponse<CustomPageResponse<GarageDto>>> searchMotorbikeGarages(
             @RequestParam(name="pageNumber", defaultValue = "0", required = true) Integer pageNumber,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "motorbikeMake", required = false) String motorbikeMake,
@@ -235,7 +233,7 @@ public class GarageController {
             @RequestParam(name = "engineAspiration", required = false) String engineAspiration
     ){
 
-        Page<Garage> garages = garageService.searchMotorbikeGarages(
+        CustomPageResponse<GarageDto> garages = garageService.searchMotorbikeGarages(
                 pageNumber, name, motorbikeCategory, motorbikeModel, motorbikeCategory, mileage, previousOwnersCount,
                 enginePower, topSpeed, acceleration, transmissionType, engineAspiration, engineLayout
         );

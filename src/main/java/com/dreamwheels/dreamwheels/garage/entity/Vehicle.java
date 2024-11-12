@@ -13,7 +13,6 @@ import lombok.*;
 @Entity(name = "vehicle_garages")
 @Builder
 public class Vehicle extends Garage {
-//    @Enumerated(EnumType.STRING)
     private String vehicleMake;
     @Enumerated(EnumType.STRING)
     private VehicleModel vehicleModel;

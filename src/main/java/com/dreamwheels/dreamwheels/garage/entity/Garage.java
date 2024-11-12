@@ -81,7 +81,7 @@ public class Garage{
     private List<UploadedFile> garageFiles = new ArrayList<>(0);
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "garage")
-    @OrderBy(value = "createdAt")
+    @OrderBy(value = "createdAt DESC")
     private List<Comment> comments = new ArrayList<>();
 
     @CreationTimestamp
