@@ -1,16 +1,17 @@
 package com.dreamwheels.dreamwheels.comments.serviceimpl;
 
 import com.dreamwheels.dreamwheels.auth.repository.AuthRepository;
-import com.dreamwheels.dreamwheels.comments.dto.CommentDto;
+import com.dreamwheels.dreamwheels.comments.adapters.CommentAdapter;
+import com.dreamwheels.dreamwheels.comments.dtos.CommentDto;
+import com.dreamwheels.dreamwheels.comments.models.CommentModel;
 import com.dreamwheels.dreamwheels.comments.entity.Comment;
 import com.dreamwheels.dreamwheels.comments.enums.CommentAction;
 import com.dreamwheels.dreamwheels.comments.events.CommentEvent;
 import com.dreamwheels.dreamwheels.comments.repository.CommentRepository;
 import com.dreamwheels.dreamwheels.comments.service.CommentService;
+import com.dreamwheels.dreamwheels.configuration.adapters.CustomPageAdapter;
 import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundException;
-import com.dreamwheels.dreamwheels.configuration.responses.Data;
-import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
-import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
+import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.repository.GarageRepository;
 import com.dreamwheels.dreamwheels.users.entity.User;
@@ -20,8 +21,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -41,8 +40,14 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Autowired
+    private CommentAdapter commentAdapter;
+
+    @Autowired
+    private CustomPageAdapter<CommentDto, CommentDto> customPageAdapter;
+
     @Override
-    public Comment addGarageComment(String garageId, CommentDto commentDto) {
+    public CommentDto addGarageComment(String garageId, CommentModel commentDto) {
         Garage garage = garageRepository.findById(garageId).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         Comment comment = Comment.builder()
                 .comment(commentDto.getComment())
@@ -52,15 +57,15 @@ public class CommentServiceImpl implements CommentService {
                 .build();
         Comment saved = commentRepository.save(comment);
         applicationEventPublisher.publishEvent(new CommentEvent(comment, CommentAction.Add));
-        return saved;
+        return commentAdapter.toBusiness(saved);
     }
 
     @Override
-    public Page<Comment> garageComments(String garageId, int pageNumber) {
+    public CustomPageResponse<CommentDto> garageComments(String garageId, int pageNumber) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
-        Page<Comment> comments = commentRepository.findAllByParentIsNull(pageRequest);
-        return comments;
+        Page<CommentDto> comments = commentRepository.findAllByParentIsNull(pageRequest).map(comment -> commentAdapter.toBusiness(comment));
+        return customPageAdapter.toBusiness(comments);
     }
 
     @Override
@@ -69,19 +74,17 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findByIdAndUserId(commentId, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
         System.out.println(comment.getComment());
         commentRepository.deleteById(comment.getId());
-        deleteCommentAndReplies(comment);
     }
 
     @Override
-    public Comment replyToComment(String commentId, CommentDto commentDto) {
+    public CommentDto replyToComment(String commentId, CommentModel commentDto) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
         Comment comment1 = Comment.builder()
                 .comment(commentDto.getComment())
                 .parent(comment)
                 .user(authenticatedUser())
                 .build();
-        Comment saved = commentRepository.save(comment1);
-        return saved;
+       return commentAdapter.toBusiness(commentRepository.save(comment1));
     }
 
     private User authenticatedUser(){
@@ -89,12 +92,4 @@ public class CommentServiceImpl implements CommentService {
         return authRepository.findByEmail(authentication.getName());
     }
 
-    private void deleteCommentAndReplies(Comment comment) {
-        if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
-            for (Comment reply : comment.getReplies()) {
-                deleteCommentAndReplies(reply);
-            }
-        }
-        commentRepository.delete(comment);
-    }
 }

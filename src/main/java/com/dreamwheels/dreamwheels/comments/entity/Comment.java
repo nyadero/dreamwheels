@@ -22,7 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,26 +31,18 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_comment_id")
-//    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private Comment parent;
 
-
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JsonIgnore
-//    @JsonBackReference
-//    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private List<Comment> replies = new ArrayList<>();
-
 
     //   garage has many comments
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     @JsonIgnore
-    @JsonBackReference
     private Garage garage;
 
     //  user can have multiple comments
     @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
-//    @JsonBackReference
     private User user;
 
     @CreationTimestamp

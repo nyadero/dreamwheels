@@ -1,8 +1,10 @@
 package com.dreamwheels.dreamwheels.comments.controller;
 
-import com.dreamwheels.dreamwheels.comments.dto.CommentDto;
+import com.dreamwheels.dreamwheels.comments.dtos.CommentDto;
+import com.dreamwheels.dreamwheels.comments.models.CommentModel;
 import com.dreamwheels.dreamwheels.comments.entity.Comment;
 import com.dreamwheels.dreamwheels.comments.service.CommentService;
+import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
@@ -22,11 +24,11 @@ public class CommentsController {
     // add garage comment
     @PreAuthorize("isAuthenticated")
     @PostMapping("/{garageId}")
-    public ResponseEntity<GarageApiResponse<Comment>> addGarageComment(
+    public ResponseEntity<GarageApiResponse<CommentDto>> addGarageComment(
            @PathVariable("garageId") String garageId,
-           @RequestBody CommentDto commentDto
+           @RequestBody CommentModel commentDto
     ){
-        Comment comment = commentService.addGarageComment(garageId, commentDto);
+        CommentDto comment = commentService.addGarageComment(garageId, commentDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new GarageApiResponse<>(new Data<>(comment), "Comment added", ResponseType.SUCCESS)
         );
@@ -34,11 +36,11 @@ public class CommentsController {
 
     // fetch garage comments
     @GetMapping("/{garageId}")
-    public ResponseEntity<GarageApiResponse<Page<Comment>>> garageComments(
+    public ResponseEntity<GarageApiResponse<CustomPageResponse<CommentDto>>> garageComments(
             @PathVariable("garageId") String garageId,
             @RequestParam(name = "page", defaultValue = "0") int pageNumber
     ){
-        Page<Comment> comments = commentService.garageComments(garageId, pageNumber);
+        CustomPageResponse<CommentDto> comments = commentService.garageComments(garageId, pageNumber);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new GarageApiResponse<>(new Data<>(comments), "Comments retrieved", ResponseType.SUCCESS)
         );
@@ -59,11 +61,11 @@ public class CommentsController {
     // reply to comment
     @PreAuthorize("isAuthenticated")
     @PostMapping("/{commentId}/reply")
-    public ResponseEntity<GarageApiResponse<Comment>> replyToComment(
+    public ResponseEntity<GarageApiResponse<CommentDto>> replyToComment(
             @PathVariable("commentId") String commentId,
-            @RequestBody CommentDto commentDto
+            @RequestBody CommentModel commentDto
     ){
-        Comment comment = commentService.replyToComment(commentId, commentDto);
+        CommentDto comment = commentService.replyToComment(commentId, commentDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new GarageApiResponse<>(new Data<>(comment), "Reply added", ResponseType.SUCCESS)
         );
