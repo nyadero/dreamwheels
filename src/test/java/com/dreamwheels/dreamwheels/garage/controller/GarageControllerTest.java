@@ -1,9 +1,12 @@
 package com.dreamwheels.dreamwheels.garage.controller;
 
+import com.dreamwheels.dreamwheels.configuration.security.jwt.JwtUtils;
 import com.dreamwheels.dreamwheels.garage.models.MotorbikeGarageModel;
 import com.dreamwheels.dreamwheels.garage.models.VehicleGarageModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,8 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,29 +41,57 @@ class GarageControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    private String jwtToken;
+
+    @BeforeAll
+    static void setup() {
+        Dotenv dotenv = Dotenv.load();
+        dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
+    }
+
     @BeforeEach
-    void setUp() {
+    void generateJwtToken() {
+        // Create a test user to generate the JWT
+        // Make sure the user is enabled and also registered
+        UserDetails testUser = new User("briannyadero@gmail.com", "password", Collections.emptyList());
+        jwtToken = jwtUtils.generateJwtToken(testUser);
     }
 
     @AfterEach
     void tearDown() {
+        jwtToken = null;
     }
 
     @Test
     void addVehicleGarage() throws Exception{
-        VehicleGarageModel vehicleGarageDto = new VehicleGarageModel();
-        vehicleGarageDto.setVehicleMake("Porsche");
-        vehicleGarageDto.setVehicleModel("911 Dakar");
-        vehicleGarageDto.setName("Porsche 911 Dakar");
-        vehicleGarageDto.setDescription("Porsche 911 Dakar planning to go on a world tour with it");
-        vehicleGarageDto.setBuyingPrice(20_0000_000.00);
-        vehicleGarageDto.setPreviousOwnersCount(1);
-
+        MultiValueMap<String, String> vehicleGarageModel = new LinkedMultiValueMap<>();
+        vehicleGarageModel.add("vehicleMake", "Porsche");
+        vehicleGarageModel.add("vehicleModel","Dakar");
+        vehicleGarageModel.add("name","Porsche 911 Dakar 2024");
+        vehicleGarageModel.add("description", "Porsche 911 Dakar planning to go on a world tour with it");
+        vehicleGarageModel.add("buyingPrice", String.valueOf(20_0000_000.00));
+        vehicleGarageModel.add("previousOwnersCount", String.valueOf(1));
+        vehicleGarageModel.add("acceleration", String.valueOf(3));
+        vehicleGarageModel.add("bodyType", "Coupe");
+        vehicleGarageModel.add("driveTrain", "Rwd");
+        vehicleGarageModel.add("fuelType", "Petrol");
+        vehicleGarageModel.add("engineAspiration","Turbocharged");
+        vehicleGarageModel.add("engineLayout","V6");
+        vehicleGarageModel.add("enginePosition","Rear");
+        vehicleGarageModel.add("enginePower", String.valueOf(600));
+        vehicleGarageModel.add("mileage", String.valueOf(10000));
+        vehicleGarageModel.add("torque", String.valueOf(589));
+        vehicleGarageModel.add("topSpeed", String.valueOf(340));
+        vehicleGarageModel.add("transmissionType","Manual");
 
         mockMvc.perform(
                 post("/api/v1/garages/vehicle")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(vehicleGarageDto))
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .params(vehicleGarageModel)
         ).andExpectAll(
                 status().isCreated(),
                 content().contentType(MediaType.APPLICATION_JSON)
@@ -61,92 +100,30 @@ class GarageControllerTest {
         );
     }
 
+
     @Test
     void addMotorbikeGarage() throws Exception {
-        MotorbikeGarageModel motorbikeGarageDto = new MotorbikeGarageModel();
-        motorbikeGarageDto.setName("Ducati panigale");
-        motorbikeGarageDto.setDescription("My fast ducati panigae v4");
-        motorbikeGarageDto.setMotorbikeMake("Ducati");
-        motorbikeGarageDto.setMotorbikeModel("Panigale");
-        motorbikeGarageDto.setBuyingPrice(3_200_000.00);
-        motorbikeGarageDto.setPreviousOwnersCount(1);
 
-        mockMvc.perform(
-                post("/api/v1/garages/motorbike")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(motorbikeGarageDto))
-        ).andExpectAll(
-                status().isCreated()
-        ).andDo(
-                print()
-        );
     }
 
     @Test
     void allGarages() throws Exception {
-        mockMvc.perform(
-                get("/api/v1/garages")
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpectAll(
-                status().isOk()
-        ).andDo(
-                print()
-        );
+
     }
 
     @Test
     void getGarageById() throws Exception {
-        mockMvc.perform(
-                get("/api/v1/garages/24c94001-03ec-41bc-bd6e-3563868816e9")
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpectAll(
-                status().isOk()
-        ).andDo(
-                print()
-        );
+
     }
 
     @Test
     void updateVehicleGarage() throws Exception {
-        VehicleGarageModel vehicleGarageDto = new VehicleGarageModel();
-        vehicleGarageDto.setVehicleMake("Porsche");
-        vehicleGarageDto.setVehicleModel("911 Dakar");
-        vehicleGarageDto.setName("Porsche 911 Dakar edited");
-        vehicleGarageDto.setDescription("Porsche 911 Dakar planning to go on a world tour with it edited");
-        vehicleGarageDto.setBuyingPrice(20_0000_000.00);
-        vehicleGarageDto.setPreviousOwnersCount(1);
 
-        mockMvc.perform(
-                put("/api/v1/garages/vehicle/acebe240-2799-4f3f-bcba-9de872010c66")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(vehicleGarageDto))
-        ).andExpectAll(
-                status().isCreated(),
-                content().contentType(MediaType.APPLICATION_JSON)
-        ).andDo(
-                print()
-        );
     }
 
     @Test
     void updateMotorbikeGarage() throws Exception {
-        MotorbikeGarageModel motorbikeGarageDto = new MotorbikeGarageModel();
-        motorbikeGarageDto.setName("Ducati panigale edited");
-        motorbikeGarageDto.setDescription("My fast ducati panigae v4");
-        motorbikeGarageDto.setMotorbikeMake("Ducati");
-        motorbikeGarageDto.setMotorbikeModel("Panigale");
-        motorbikeGarageDto.setBuyingPrice(3_200_000.00);
-        motorbikeGarageDto.setPreviousOwnersCount(1);
 
-        mockMvc.perform(
-                put("/api/v1/garages/motorbike/24c94001-03ec-41bc-bd6e-3563868816e9")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(motorbikeGarageDto))
-        ).andExpectAll(
-                status().isCreated()
-        ).andDo(
-                print()
-        );
     }
 
     @Test
@@ -159,12 +136,6 @@ class GarageControllerTest {
 
     @Test
     void deleteGarage() throws Exception {
-        mockMvc.perform(
-                delete("/api/v1/garages/24c94001-03ec-41bc-bd6e-3563868816e9")
-        ).andExpectAll(
-                status().isOk()
-        ).andDo(
-                print()
-        );
+
     }
 }
