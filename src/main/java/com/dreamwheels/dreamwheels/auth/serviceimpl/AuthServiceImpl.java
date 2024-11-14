@@ -12,7 +12,7 @@ import com.dreamwheels.dreamwheels.auth.repository.PasswordResetTokenRepository;
 import com.dreamwheels.dreamwheels.auth.repository.VerificationTokenRepository;
 import com.dreamwheels.dreamwheels.auth.response.SigninResponse;
 import com.dreamwheels.dreamwheels.auth.service.AuthService;
-import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundException;
+import com.dreamwheels.dreamwheels.configuration.exceptions.*;
 import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
 import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
@@ -20,51 +20,60 @@ import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
 import com.dreamwheels.dreamwheels.configuration.security.jwt.JwtUtils;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.Calendar;
+import java.util.Optional;
 
 @Service
+@Slf4j
 public class AuthServiceImpl implements AuthService {
+    private final AuthRepository authRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private AuthRepository authRepository;
-    @Autowired
-    private VerificationTokenRepository verificationTokenRepository;
-    @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
-    @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    public AuthServiceImpl(
+            AuthRepository authRepository,
+            VerificationTokenRepository verificationTokenRepository,
+            PasswordResetTokenRepository passwordResetTokenRepository,
+            PasswordEncoder passwordEncoder,
+            ApplicationEventPublisher applicationEventPublisher,
+            JwtUtils jwtUtils,
+            AuthenticationManager authenticationManager
+    ) {
+        this.authRepository = authRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.jwtUtils = jwtUtils;
+        this.authenticationManager = authenticationManager;
+    }
 
     @Override
     @TryCatchAnnotation
     public User registerUser(RegisterRequest registerRequest, HttpServletRequest request) {
 //        find if user is already registered
         if (authRepository.existsByEmail(registerRequest.getEmail())) {
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Email is already taken", ResponseType.ERROR), HttpStatus.OK);
-        }
-        if (authRepository.existsByUserName(registerRequest.getUserName())) {
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), " username is already taken", ResponseType.ERROR), HttpStatus.OK);
+            throw new EntityExistsException("Email already registered");
         }
         // compare passwords
         if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Passwords do not match", ResponseType.ERROR), HttpStatus.OK);
+           throw new PasswordsNotMatchingException("Passwords do not match");
         }
 
         User user = User.builder()
@@ -86,15 +95,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @TryCatchAnnotation
     public void validateVerificationToken(String token) {
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
-        if (verificationToken == null){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "invalid verification token. Ensure it is the correct one", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
-        }
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token).orElseThrow(()->new EntityNotFoundException("Invalid email verification token"));
         User user = verificationToken.getUser();
         Calendar calendar = Calendar.getInstance();
         if ((verificationToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0){
             verificationTokenRepository.delete(verificationToken);
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Verification token has expired", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
+            throw new TokenExpiredException("Email verification token has expired");
         }
         user.setEnabled(true);
         authRepository.save(user);
@@ -104,7 +110,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @TryCatchAnnotation
     public VerificationToken generateNewToken(String oldToken, HttpServletRequest request) {
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(oldToken);
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(oldToken).orElseThrow(()->new EntityNotFoundException("Invalid email verification token"));
         verificationTokenRepository.delete(verificationToken);
         applicationEventPublisher.publishEvent(new ResendVerificationTokenEvent(verificationToken.getUser(), applicationUrl(request)));
         return verificationToken;
@@ -113,10 +119,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @TryCatchAnnotation
     public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest, HttpServletRequest request) {
-        User user = authRepository.findByEmail(forgotPasswordRequest.getEmail());
-        if(user == null){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Error: The email address could not be found", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
-        }
+        User user = authRepository.findByEmail(forgotPasswordRequest.getEmail()).orElseThrow(() -> new EntityNotFoundException("The entered email address is incorrect"));
         applicationEventPublisher.publishEvent(new ForgotPasswordEvent(user, applicationUrl(request)));
     }
 
@@ -125,20 +128,15 @@ public class AuthServiceImpl implements AuthService {
     @TryCatchAnnotation
     public void resetPassword(String token, ResetPasswordRequest resetPasswordRequest) {
         // check if token exists
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
-        System.out.println(passwordResetToken);
-//       // get user
-        if(passwordResetToken == null){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Error: invalid password reset token", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
-        }
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token).orElseThrow(() -> new EntityNotFoundException("Invalid password reset token"));
         // compare passwords
         if(!resetPasswordRequest.getNewPassword().equals(resetPasswordRequest.getConfirmNewPassword())){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Error: Passwords do not match", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
+            throw new PasswordsNotMatchingException("Passwords do not match");
         }
         // check token expiry
         Calendar calendar = Calendar.getInstance();
         if ((passwordResetToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Error: Your password reset token is expired", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
+            throw new TokenExpiredException("Password reset token has expired");
         }
         // save user
         User user = passwordResetToken.getUser();
@@ -151,44 +149,41 @@ public class AuthServiceImpl implements AuthService {
     @TryCatchAnnotation
     public SigninResponse signinUser(SigninRequest signinRequest)  {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword());
-        System.out.println(usernamePasswordAuthenticationToken);
-//        if (usernamePasswordAuthenticationToken){
-//            return new ResponseEntity<>(new GarageApiResponse(null, "Incorrect credentials", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
-//        }
+        log.info("isAuthenticated {}", usernamePasswordAuthenticationToken.getDetails());
+        if (usernamePasswordAuthenticationToken.getDetails() != null){
+            log.error("Incorrect credentials");
+            throw new BadCredentialsException("Check your credentials and try again");
+        }
+        log.info("user {}", usernamePasswordAuthenticationToken);
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         if(!authentication.isAuthenticated()){
             throw new BadCredentialsException("Incorrect credentials2");
         }
         System.out.println(authentication.getPrincipal());
-        User user = authRepository.findByEmail(signinRequest.getEmail());
-        if(user == null){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "The email address could not be found", ResponseType.ERROR), HttpStatus.BAD_REQUEST);
-        }
-        var jwtToken = jwtUtils.generateJwtToken(user);
-        System.out.println("generated token  " + jwtToken);
-        SigninResponse signinResponse = SigninResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .userName(user.getUsername())
-                .email(user.getEmail())
+        User user1 = (User) authentication.getPrincipal();
+        var jwtToken = jwtUtils.generateJwtToken(user1);
+        log.info("generated token  {}", jwtToken);
+        return SigninResponse.builder()
+                .id(user1.getId())
+                .name(user1.getName())
+                .userName(user1.getUsername())
+                .email(user1.getEmail())
                 .jwtToken(jwtToken)
                 .build();
-        return signinResponse;
     }
 
     @Override
     @TryCatchAnnotation
     public void updatePassword(UpdatePasswordRequest updatePasswordModel) {
-        System.out.println("user password " + authenticatedUser().getPassword());
-        System.out.println(passwordEncoder.encode(updatePasswordModel.getCurrentPassword()));
         // compare current password with user password
         if(!passwordEncoder.matches(updatePasswordModel.getCurrentPassword(), authenticatedUser().getPassword())){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Passwords do not match", ResponseType.ERROR), HttpStatus.OK);
+            throw new PasswordsNotMatchingException("Passwords do not match");
         }
         // compare new password and confirm password
         if (!updatePasswordModel.getNewPassword().equals(updatePasswordModel.getConfirmNewPassword())){
-//            return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "Passwords do not match", ResponseType.ERROR), HttpStatus.OK);
+            throw new PasswordsNotMatchingException("Passwords do not match");
         }
+
         authenticatedUser().setPassword(passwordEncoder.encode(updatePasswordModel.getNewPassword()));
         authRepository.save(authenticatedUser());
     }
@@ -199,15 +194,13 @@ public class AuthServiceImpl implements AuthService {
 //    @Transactional
     public ResponseEntity<GarageApiResponse<Void>> deleteAccount() {
         User user = authRepository.findById(authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
-        System.out.println(user.getName());
-//        authRepository.deleteById(user.getId());
         authRepository.delete(user);
         return new ResponseEntity<>(new GarageApiResponse<>(new Data<>(null), "User account removed", ResponseType.SUCCESS), HttpStatus.OK);
     }
 
     private User authenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authRepository.findByEmail(authentication.getName());
+        return (User) authentication.getPrincipal();
     }
 
     public void saveVerificationToken(User user, String token) {
