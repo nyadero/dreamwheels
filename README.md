@@ -12,20 +12,21 @@ project that i am using to practice more advanced concepts i have learnt or plan
 * Redis
 
 ### Future plans
-* Implement Redis caching
-* Implement Kafka Message Broker
-* Implement Websockets for realtime messaging and chats, realtime updates on likes and views count
+-[x] Implement Redis caching
+-[ ] Implement Kafka Message Broker
+-[ ] Implement Websockets for realtime messaging and chats, realtime updates on likes and views count
 
 ### TODOS
 - [X] Integrate flyway migrations
 - [X] Local files upload and deletion 
 - [X] Redis caching
-- [ ] Files upload to cloudinary
+- [ ] Files upload to cloud storage
 - [ ] Write unit tests
 - [ ] Configure CI/CD pipeline
 
 ### Contributing
-Thank you for considering contributing to **Dreamwheels**! Contributions are welcome, whether it’s adding new ideas, enhancing features, refactoring code, or improving documentation.
+Thank you for considering contributing to **Dreamwheels**! Contributions are welcome, whether it’s adding new ideas,
+enhancing features, refactoring code, or improving documentation.
 
 To get started:
 1. **Explore the Code**: Familiarize yourself with the existing structure and identify any areas for optimization or best practices.
