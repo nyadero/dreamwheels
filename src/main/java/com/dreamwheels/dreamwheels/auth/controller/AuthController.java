@@ -64,7 +64,7 @@ public class AuthController {
     public ResponseEntity<GarageApiResponse<Void>>verifyRegistration(@RequestParam("token") String token){
         authenticationService.validateVerificationToken(token);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new GarageApiResponse<>(null, "Verification token sent to your email", ResponseType.SUCCESS)
+                new GarageApiResponse<>(null, "Your email has been verified. Proceed to login", ResponseType.SUCCESS)
         );
     }
 
