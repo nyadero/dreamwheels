@@ -8,6 +8,7 @@ import com.dreamwheels.dreamwheels.garage.enums.GarageCategory;
 import com.dreamwheels.dreamwheels.garage.enums.TransmissionType;
 import com.dreamwheels.dreamwheels.uploaded_files.dto.UploadedFileDto;
 import com.dreamwheels.dreamwheels.uploaded_files.entity.UploadedFile;
+import com.dreamwheels.dreamwheels.users.dtos.UserDto;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -55,10 +56,9 @@ public class GarageDto {
 
     private EngineAspiration engineAspiration;
 
-    private User user;
+    private UserDto user;
 
     private List<UploadedFileDto> garageFiles;
-
 
     private List<CommentDto> comments;
 
