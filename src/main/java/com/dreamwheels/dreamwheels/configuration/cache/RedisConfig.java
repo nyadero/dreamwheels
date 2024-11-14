@@ -1,8 +1,4 @@
-package com.dreamwheels.dreamwheels.configuration.redis;
-
-import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+package com.dreamwheels.dreamwheels.configuration.cache;
 
 //@Configuration
 public class RedisConfig {
