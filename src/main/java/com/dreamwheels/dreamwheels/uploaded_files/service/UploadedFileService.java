@@ -1,6 +1,7 @@
 package com.dreamwheels.dreamwheels.uploaded_files.service;
 
 import com.dreamwheels.dreamwheels.uploaded_files.entity.UploadedFile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UploadedFileService {
     private static final String UPLOAD_DIRECTORY = "src/main/resources/uploads";
 
@@ -31,7 +33,7 @@ public class UploadedFileService {
         Path uploadPath = uploadDirectory.resolve(fileName);
         Files.copy(inputStream, uploadPath, StandardCopyOption.REPLACE_EXISTING);
         String uploadedFile = applicationUrl.concat("/api/v1/uploads/").concat(fileName);
-        System.out.println(uploadedFile);
+        log.info(uploadedFile);
         return uploadedFile;
    }
 
@@ -43,17 +45,17 @@ public class UploadedFileService {
             // extract file name by removing the application url part
             String[] fileParts = fileName.split("/");
             String extractedFileName = fileParts[fileParts.length - 1];
-            System.out.println(extractedFileName);
+            log.info(extractedFileName);
             File fileToDelete = new File(UPLOAD_DIRECTORY.concat("/").concat(extractedFileName));
             if (fileToDelete.exists() && fileToDelete.isFile()){
                 fileToDelete.delete();
             }
-            System.out.println("file deleted " + extractedFileName);
+            log.info("file deleted {}", extractedFileName);
         }catch (Exception exception){
-            System.out.println(exception.getMessage());
+            log.info(exception.getMessage());
             throw new IllegalArgumentException(exception.getMessage());
         }
-        System.out.println("Done deleting " + fileName);
+        log.info("Done deleting {}", fileName);
     }
 
 }

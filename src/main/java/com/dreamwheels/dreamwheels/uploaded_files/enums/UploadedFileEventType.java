@@ -1,4 +1,4 @@
-package com.dreamwheels.dreamwheels.uploaded_files.event;
+package com.dreamwheels.dreamwheels.uploaded_files.enums;
 
 public enum UploadedFileEventType {
     Upload,

@@ -3,7 +3,7 @@ package com.dreamwheels.dreamwheels.uploaded_files.eventlistener;
 import com.dreamwheels.dreamwheels.uploaded_files.entity.UploadedFile;
 import com.dreamwheels.dreamwheels.uploaded_files.enums.FileTags;
 import com.dreamwheels.dreamwheels.uploaded_files.event.UploadedFileEvent;
-import com.dreamwheels.dreamwheels.uploaded_files.event.UploadedFileEventType;
+import com.dreamwheels.dreamwheels.uploaded_files.enums.UploadedFileEventType;
 import com.dreamwheels.dreamwheels.uploaded_files.repository.UploadedFileRepository;
 import com.dreamwheels.dreamwheels.uploaded_files.service.UploadedFileService;
 import lombok.extern.slf4j.Slf4j;
