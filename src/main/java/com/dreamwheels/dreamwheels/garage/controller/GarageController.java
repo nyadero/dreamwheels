@@ -8,13 +8,10 @@ import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
 import com.dreamwheels.dreamwheels.garage.dtos.GarageDto;
 import com.dreamwheels.dreamwheels.garage.models.MotorbikeGarageModel;
 import com.dreamwheels.dreamwheels.garage.models.VehicleGarageModel;
-import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,8 +26,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/garages")
 public class GarageController {
 
-    @Autowired
-    private GarageService garageService;
+    private final GarageService garageService;
+
+    public GarageController(GarageService garageService) {
+        this.garageService = garageService;
+    }
 
     // add a vehicle Garage
     @PostMapping("/vehicle")
