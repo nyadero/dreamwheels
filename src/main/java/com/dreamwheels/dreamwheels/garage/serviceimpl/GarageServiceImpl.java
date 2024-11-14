@@ -1,6 +1,5 @@
 package com.dreamwheels.dreamwheels.garage.serviceimpl;
 
-import com.dreamwheels.dreamwheels.auth.repository.AuthRepository;
 import com.dreamwheels.dreamwheels.configuration.adapters.CustomPageAdapter;
 import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundException;
 import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
@@ -17,11 +16,11 @@ import com.dreamwheels.dreamwheels.garage.repository.GarageRepository;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;
 import com.dreamwheels.dreamwheels.uploaded_files.enums.FileTags;
 import com.dreamwheels.dreamwheels.uploaded_files.event.UploadedFileEvent;
-import com.dreamwheels.dreamwheels.uploaded_files.event.UploadedFileEventType;
+import com.dreamwheels.dreamwheels.uploaded_files.enums.UploadedFileEventType;
 import com.dreamwheels.dreamwheels.uploaded_files.eventlistener.UploadedFileEventListener;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,31 +36,40 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Slf4j
 public class GarageServiceImpl implements GarageService {
-    @Autowired
-    private GarageRepository garageRepository;
 
-    @Autowired
-    private AuthRepository authRepository;
-    
-    @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
+    private final GarageRepository garageRepository;
 
-    @Autowired
-    private UploadedFileEventListener uploadedFileEventListener;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Autowired
-    private GarageAdapter garageAdapter;
+    private final UploadedFileEventListener uploadedFileEventListener;
 
-    @Autowired
-    private CustomPageAdapter<GarageDto, GarageDto> customPageAdapter;
+    private final GarageAdapter garageAdapter;
+
+    private final CustomPageAdapter<GarageDto, GarageDto> customPageAdapter;
+
+    public GarageServiceImpl(
+            GarageRepository garageRepository,
+            ApplicationEventPublisher applicationEventPublisher,
+            UploadedFileEventListener uploadedFileEventListener,
+            GarageAdapter garageAdapter,
+            CustomPageAdapter<GarageDto, GarageDto> customPageAdapter
+    ) {
+        this.garageRepository = garageRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.uploadedFileEventListener = uploadedFileEventListener;
+        this.garageAdapter = garageAdapter;
+        this.customPageAdapter = customPageAdapter;
+    }
+
 
     public static final int PAGE_SIZE = 20;
 
     @Override
     @TryCatchAnnotation
     public GarageDto addVehicleGarage(VehicleGarageModel vehicleGarageDto, HttpServletRequest httpRequest) {
-        Garage garage = null;
+        Garage garage;
         garage = newVehiclegarage(vehicleGarageDto);
         garage.setName(vehicleGarageDto.getName());
         garage.setDescription(vehicleGarageDto.getDescription());
@@ -91,7 +99,7 @@ public class GarageServiceImpl implements GarageService {
             MotorbikeGarageModel motorbikeGarageDto,
             HttpServletRequest httpRequest
     ) {
-        Garage garage = null;
+        Garage garage;
         garage = newMotorbikegarage(motorbikeGarageDto);
         garage.setName(motorbikeGarageDto.getName());
         garage.setDescription(motorbikeGarageDto.getDescription());
@@ -122,7 +130,7 @@ public class GarageServiceImpl implements GarageService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<GarageDto> garagesPage = garageRepository.findAll(pageRequest)
-                .map(garage -> garageAdapter.toBusiness(garage));
+                .map(garageAdapter::toBusiness);
         return customPageAdapter.toBusiness(garagesPage);
     }
 
@@ -131,8 +139,8 @@ public class GarageServiceImpl implements GarageService {
     @TryCatchAnnotation
     @Cacheable(value = "garages", key = "#id")
     public GarageDto getGarageById(String id) {
-         return garageRepository.findById(id).map(garage -> garageAdapter.toBusiness(garage))
-                 .orElseThrow(() -> new EntityNotFoundException("Garage not found"));
+        return garageRepository.findById(id).map(garageAdapter::toBusiness)
+                .orElseThrow(() -> new EntityNotFoundException("Garage not found"));
     }
 
     @Override
@@ -205,7 +213,7 @@ public class GarageServiceImpl implements GarageService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<GarageDto> garagePage = garageRepository.findAllByCategory(GarageCategory.valueOf(category), pageRequest)
-                .map(garage -> garageAdapter.toBusiness(garage));
+                .map(garageAdapter::toBusiness);
         return customPageAdapter.toBusiness(garagePage);
     }
 
@@ -220,7 +228,7 @@ public class GarageServiceImpl implements GarageService {
         if (name != null && !name.isEmpty()){
             System.out.println("name " + name);
             vehiclesSpecification = vehiclesSpecification.and((root, query, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("name"), name)
+                    criteriaBuilder.like(root.get("name"), name)
             );
         }
 
@@ -276,8 +284,8 @@ public class GarageServiceImpl implements GarageService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<GarageDto> garagePage = garageRepository.findAll(vehiclesSpecification, pageRequest)
-                .map(garage -> garageAdapter.toBusiness(garage));
-       return customPageAdapter.toBusiness(garagePage);
+                .map(garageAdapter::toBusiness);
+        return customPageAdapter.toBusiness(garagePage);
     }
 
     @Override
@@ -299,9 +307,9 @@ public class GarageServiceImpl implements GarageService {
 
         // if make is not null
         if (motorbikeMake != null && !motorbikeMake.isEmpty()){
-             garageSpecification = garageSpecification.and((root, query, criteriaBuilder) ->
-                             criteriaBuilder.equal(root.get("motorbikeMake"), MotorbikeMake.valueOf(motorbikeMake))
-             );
+            garageSpecification = garageSpecification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("motorbikeMake"), MotorbikeMake.valueOf(motorbikeMake))
+            );
         }
 
         // if motorbike model is not null
@@ -335,7 +343,7 @@ public class GarageServiceImpl implements GarageService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
         Page<GarageDto> garagePage = garageRepository.findAll(garageSpecification, pageRequest)
-                .map(garage -> garageAdapter.toBusiness(garage));
+                .map(garageAdapter::toBusiness);
         return customPageAdapter.toBusiness(garagePage);
     }
 
@@ -344,7 +352,6 @@ public class GarageServiceImpl implements GarageService {
     @CacheEvict(value = "garages", key = "#id")
     public void deleteGarage(String id) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
-        System.out.println(garage.getName());
         applicationEventPublisher.publishEvent(new UploadedFileEvent(garage, List.of(), UploadedFileEventType.Delete, authenticatedUser(), null, null, garage.getGarageFiles()));
         garageRepository.deleteById(garage.getId());
     }
@@ -366,12 +373,6 @@ public class GarageServiceImpl implements GarageService {
         motorbike.setMotorbikeModel(MotorbikeModel.valueOf(motorbikeGarageDto.getMotorbikeModel()));
         motorbike.setMotorbikeCategory(MotorbikeCategory.valueOf(motorbikeGarageDto.getMotorbikeCategory()));
         return motorbike;
-    }
-
-
-    private User authenticatedUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authRepository.findByEmail(authentication.getName());
     }
 
     private void uploadVehicleFiles(VehicleGarageModel vehicleGarageDto, Garage saved, HttpServletRequest httpRequest) {
@@ -401,7 +402,6 @@ public class GarageServiceImpl implements GarageService {
         }
     }
 
-
     private void uploadMotorbikeFiles(MotorbikeGarageModel motorbikeGarageDto, HttpServletRequest httpRequest, Garage garage) {
         // upload general files
         if (!motorbikeGarageDto.getGeneralFiles().isEmpty()){
@@ -426,6 +426,24 @@ public class GarageServiceImpl implements GarageService {
 
     private static String applicationUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    }
+
+    private User authenticatedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // Return null if there's no authenticated user
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            log.info("Authenticated user: {}", principal);
+            return (User) principal;
+        } else {
+            // Principal is not a User instance, possibly "anonymousUser" or another type
+            log.warn("Principal is not a User instance. Actual type: {}", principal.getClass());
+            return null;
+        }
     }
 
 }

@@ -89,7 +89,17 @@ public class CommentServiceImpl implements CommentService {
 
     private User authenticatedUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authRepository.findByEmail(authentication.getName());
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // Return null if there's no authenticated user
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            return (User) principal;
+        } else {
+            return null;
+        }
     }
 
 }
