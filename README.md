@@ -12,9 +12,9 @@ project that i am using to practice more advanced concepts i have learnt or plan
 * Redis
 
 ### Future plans
--[x] Implement Redis caching
--[ ] Implement Kafka Message Broker
--[ ] Implement Websockets for realtime messaging and chats, realtime updates on likes and views count
+- [x] Implement Redis caching
+- [ ] Implement Kafka Message Broker
+- [ ] Implement Websockets for realtime messaging and chats, realtime updates on likes and views count
 
 ### TODOS
 - [X] Integrate flyway migrations
