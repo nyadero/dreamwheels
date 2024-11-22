@@ -150,24 +150,19 @@ public class AuthServiceImpl implements AuthService {
     public SigninResponse signinUser(SigninRequest signinRequest)  {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword());
         log.info("isAuthenticated {}", usernamePasswordAuthenticationToken.getDetails());
-        if (usernamePasswordAuthenticationToken.getDetails() != null){
+        if (usernamePasswordAuthenticationToken.getDetails() == null){
             log.error("Incorrect credentials");
             throw new BadCredentialsException("Check your credentials and try again");
         }
-        log.info("user {}", usernamePasswordAuthenticationToken);
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        if(!authentication.isAuthenticated()){
-            throw new BadCredentialsException("Incorrect credentials2");
-        }
-        System.out.println(authentication.getPrincipal());
-        User user1 = (User) authentication.getPrincipal();
-        var jwtToken = jwtUtils.generateJwtToken(user1);
+        User user = (User) authentication.getPrincipal();
+        var jwtToken = jwtUtils.generateJwtToken(user);
         log.info("generated token  {}", jwtToken);
         return SigninResponse.builder()
-                .id(user1.getId())
-                .name(user1.getName())
-                .userName(user1.getUsername())
-                .email(user1.getEmail())
+                .id(user.getId())
+                .name(user.getName())
+                .userName(user.getUsername())
+                .email(user.getEmail())
                 .jwtToken(jwtToken)
                 .build();
     }
