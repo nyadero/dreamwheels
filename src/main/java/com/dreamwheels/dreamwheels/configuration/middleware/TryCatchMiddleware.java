@@ -34,7 +34,8 @@ public class TryCatchMiddleware {
             throw exception;
         } catch (Exception exception) {
             log.info(exception.getMessage());
-            return handleError(exception.getMessage());
+//            return handleError(exception.getMessage());
+            throw exception;
         }
     }
 
