@@ -6,8 +6,8 @@ import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
 import com.dreamwheels.dreamwheels.garage.dtos.GarageDto;
-import com.dreamwheels.dreamwheels.garage.models.MotorbikeGarageModel;
-import com.dreamwheels.dreamwheels.garage.models.VehicleGarageModel;
+import com.dreamwheels.dreamwheels.garage.dtos.requests.MotorbikeGarageRequest;
+import com.dreamwheels.dreamwheels.garage.dtos.requests.VehicleGarageRequest;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +41,7 @@ public class GarageController {
     )
     public ResponseEntity<GarageApiResponse<GarageDto>> addVehicleGarage(
             HttpServletRequest httpRequest,
-            @Valid @ModelAttribute VehicleGarageModel vehicleGarageDto,
+            @Valid @ModelAttribute VehicleGarageRequest vehicleGarageDto,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
@@ -66,7 +66,7 @@ public class GarageController {
     )
     public ResponseEntity<GarageApiResponse<GarageDto>> addMotorbikeGarage(
             HttpServletRequest httpServletRequest,
-            @Valid @ModelAttribute MotorbikeGarageModel motorbikeGarageDto,
+            @Valid @ModelAttribute MotorbikeGarageRequest motorbikeGarageDto,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
@@ -119,7 +119,7 @@ public class GarageController {
     )
     public ResponseEntity<GarageApiResponse<GarageDto>> updateVehicleGarage(
             HttpServletRequest httpRequest,
-            @Valid @ModelAttribute VehicleGarageModel vehicleGarageDto,
+            @Valid @ModelAttribute VehicleGarageRequest vehicleGarageDto,
             @PathVariable("id") String id,
             BindingResult bindingResult
     ){
@@ -145,7 +145,7 @@ public class GarageController {
     )
     public ResponseEntity<GarageApiResponse<GarageDto>> updateMotorbikeGarage(
             HttpServletRequest httpServletRequest,
-            @Valid @ModelAttribute MotorbikeGarageModel motorbikeGarageDto,
+            @Valid @ModelAttribute MotorbikeGarageRequest motorbikeGarageDto,
             @PathVariable("id") String id,
             BindingResult bindingResult
     ){
