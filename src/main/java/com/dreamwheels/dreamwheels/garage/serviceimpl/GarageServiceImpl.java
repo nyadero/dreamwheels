@@ -6,8 +6,8 @@ import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
 import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.garage.adapters.GarageAdapter;
 import com.dreamwheels.dreamwheels.garage.dtos.GarageDto;
-import com.dreamwheels.dreamwheels.garage.models.MotorbikeGarageModel;
-import com.dreamwheels.dreamwheels.garage.models.VehicleGarageModel;
+import com.dreamwheels.dreamwheels.garage.dtos.requests.MotorbikeGarageRequest;
+import com.dreamwheels.dreamwheels.garage.dtos.requests.VehicleGarageRequest;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.entity.Motorbike;
 import com.dreamwheels.dreamwheels.garage.entity.Vehicle;
@@ -68,7 +68,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public GarageDto addVehicleGarage(VehicleGarageModel vehicleGarageDto, HttpServletRequest httpRequest) {
+    public GarageDto addVehicleGarage(VehicleGarageRequest vehicleGarageDto, HttpServletRequest httpRequest) {
         Garage garage;
         garage = newVehiclegarage(vehicleGarageDto);
         garage.setName(vehicleGarageDto.getName());
@@ -96,7 +96,7 @@ public class GarageServiceImpl implements GarageService {
     @Override
     @TryCatchAnnotation
     public GarageDto addMotorbikeGarage(
-            MotorbikeGarageModel motorbikeGarageDto,
+            MotorbikeGarageRequest motorbikeGarageDto,
             HttpServletRequest httpRequest
     ) {
         Garage garage;
@@ -146,7 +146,7 @@ public class GarageServiceImpl implements GarageService {
     @Override
     @TryCatchAnnotation
     @CachePut(value = "garages", key = "#id")
-    public GarageDto updateVehicleGarage(VehicleGarageModel vehicleGarageDto, String id, HttpServletRequest httpRequest) {
+    public GarageDto updateVehicleGarage(VehicleGarageRequest vehicleGarageDto, String id, HttpServletRequest httpRequest) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Vehicle vehicle){
             vehicle.setName(vehicleGarageDto.getName());
@@ -180,7 +180,7 @@ public class GarageServiceImpl implements GarageService {
     @Override
     @TryCatchAnnotation
     @CachePut(value = "garages", key = "#id")
-    public GarageDto updateMotorbikeGarage(MotorbikeGarageModel motorbikeGarageDto, String id, HttpServletRequest httpServletRequest) {
+    public GarageDto updateMotorbikeGarage(MotorbikeGarageRequest motorbikeGarageDto, String id, HttpServletRequest httpServletRequest) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Motorbike motorbike){
             motorbike.setName(motorbikeGarageDto.getName());
@@ -356,7 +356,7 @@ public class GarageServiceImpl implements GarageService {
         garageRepository.deleteById(garage.getId());
     }
 
-    private Garage newVehiclegarage(VehicleGarageModel vehicleGarageDto) {
+    private Garage newVehiclegarage(VehicleGarageRequest vehicleGarageDto) {
         Vehicle vehicle = new Vehicle();
         vehicle.setVehicleMake(VehicleMake.fromString(vehicleGarageDto.getVehicleMake()).getDisplayName());
         vehicle.setVehicleModel(VehicleModel.valueOf(vehicleGarageDto.getVehicleModel()));
@@ -367,7 +367,7 @@ public class GarageServiceImpl implements GarageService {
         return vehicle;
     }
 
-    private Garage newMotorbikegarage(MotorbikeGarageModel motorbikeGarageDto) {
+    private Garage newMotorbikegarage(MotorbikeGarageRequest motorbikeGarageDto) {
         Motorbike motorbike = new Motorbike();
         motorbike.setMotorbikeMake(MotorbikeMake.valueOf(motorbikeGarageDto.getMotorbikeMake()));
         motorbike.setMotorbikeModel(MotorbikeModel.valueOf(motorbikeGarageDto.getMotorbikeModel()));
@@ -375,7 +375,7 @@ public class GarageServiceImpl implements GarageService {
         return motorbike;
     }
 
-    private void uploadVehicleFiles(VehicleGarageModel vehicleGarageDto, Garage saved, HttpServletRequest httpRequest) {
+    private void uploadVehicleFiles(VehicleGarageRequest vehicleGarageDto, Garage saved, HttpServletRequest httpRequest) {
         // publish event to upload general files
         if (!vehicleGarageDto.getGeneralFiles().isEmpty()){
             applicationEventPublisher.publishEvent(new UploadedFileEvent(saved, vehicleGarageDto.getGeneralFiles(), UploadedFileEventType.Upload, authenticatedUser(), FileTags.General, applicationUrl(httpRequest), null));
@@ -402,7 +402,7 @@ public class GarageServiceImpl implements GarageService {
         }
     }
 
-    private void uploadMotorbikeFiles(MotorbikeGarageModel motorbikeGarageDto, HttpServletRequest httpRequest, Garage garage) {
+    private void uploadMotorbikeFiles(MotorbikeGarageRequest motorbikeGarageDto, HttpServletRequest httpRequest, Garage garage) {
         // upload general files
         if (!motorbikeGarageDto.getGeneralFiles().isEmpty()){
             applicationEventPublisher.publishEvent(new UploadedFileEvent(garage, motorbikeGarageDto.getGeneralFiles(), UploadedFileEventType.Upload, authenticatedUser(), FileTags.General, applicationUrl(httpRequest), null));
