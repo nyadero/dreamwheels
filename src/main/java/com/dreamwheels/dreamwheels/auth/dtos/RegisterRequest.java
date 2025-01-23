@@ -18,16 +18,16 @@ public class RegisterRequest {
     @NotEmpty(message = "username is required")
     private String userName;
 
-    @NotEmpty()
+    @NotEmpty(message = "email is required")
     @Email(message = "this is not an email")
     private String email;
 
-    @NotEmpty()
+    @NotEmpty(message = "password cannot be empty")
 //    @Min(value = 6)
 //    @Max(15)
     public String password;
 
-    @NotEmpty()
+    @NotEmpty(message = "confirm password cannot be empty")
 //    @Min(6)
 //    @Max(15)
     public String confirmPassword;
