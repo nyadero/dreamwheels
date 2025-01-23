@@ -5,7 +5,7 @@ import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundExcept
 import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
 import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.garage.adapters.GarageAdapter;
-import com.dreamwheels.dreamwheels.garage.dtos.GarageDto;
+import com.dreamwheels.dreamwheels.garage.dtos.GarageResponse;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.MotorbikeGarageRequest;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.VehicleGarageRequest;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
@@ -47,14 +47,14 @@ public class GarageServiceImpl implements GarageService {
 
     private final GarageAdapter garageAdapter;
 
-    private final CustomPageAdapter<GarageDto, GarageDto> customPageAdapter;
+    private final CustomPageAdapter<GarageResponse, GarageResponse> customPageAdapter;
 
     public GarageServiceImpl(
             GarageRepository garageRepository,
             ApplicationEventPublisher applicationEventPublisher,
             UploadedFileEventListener uploadedFileEventListener,
             GarageAdapter garageAdapter,
-            CustomPageAdapter<GarageDto, GarageDto> customPageAdapter
+            CustomPageAdapter<GarageResponse, GarageResponse> customPageAdapter
     ) {
         this.garageRepository = garageRepository;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -68,7 +68,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public GarageDto addVehicleGarage(VehicleGarageRequest vehicleGarageDto, HttpServletRequest httpRequest) {
+    public GarageResponse addVehicleGarage(VehicleGarageRequest vehicleGarageDto, HttpServletRequest httpRequest) {
         Garage garage;
         garage = newVehiclegarage(vehicleGarageDto);
         garage.setName(vehicleGarageDto.getName());
@@ -95,7 +95,7 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public GarageDto addMotorbikeGarage(
+    public GarageResponse addMotorbikeGarage(
             MotorbikeGarageRequest motorbikeGarageDto,
             HttpServletRequest httpRequest
     ) {
@@ -126,10 +126,10 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public CustomPageResponse<GarageDto> allGarages(int pageNumber) {
+    public CustomPageResponse<GarageResponse> allGarages(int pageNumber) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
-        Page<GarageDto> garagesPage = garageRepository.findAll(pageRequest)
+        Page<GarageResponse> garagesPage = garageRepository.findAll(pageRequest)
                 .map(garageAdapter::toBusiness);
         return customPageAdapter.toBusiness(garagesPage);
     }
@@ -138,7 +138,7 @@ public class GarageServiceImpl implements GarageService {
     @Override
     @TryCatchAnnotation
     @Cacheable(value = "garages", key = "#id")
-    public GarageDto getGarageById(String id) {
+    public GarageResponse getGarageById(String id) {
         return garageRepository.findById(id).map(garageAdapter::toBusiness)
                 .orElseThrow(() -> new EntityNotFoundException("Garage not found"));
     }
@@ -146,7 +146,7 @@ public class GarageServiceImpl implements GarageService {
     @Override
     @TryCatchAnnotation
     @CachePut(value = "garages", key = "#id")
-    public GarageDto updateVehicleGarage(VehicleGarageRequest vehicleGarageDto, String id, HttpServletRequest httpRequest) {
+    public GarageResponse updateVehicleGarage(VehicleGarageRequest vehicleGarageDto, String id, HttpServletRequest httpRequest) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Vehicle vehicle){
             vehicle.setName(vehicleGarageDto.getName());
@@ -180,7 +180,7 @@ public class GarageServiceImpl implements GarageService {
     @Override
     @TryCatchAnnotation
     @CachePut(value = "garages", key = "#id")
-    public GarageDto updateMotorbikeGarage(MotorbikeGarageRequest motorbikeGarageDto, String id, HttpServletRequest httpServletRequest) {
+    public GarageResponse updateMotorbikeGarage(MotorbikeGarageRequest motorbikeGarageDto, String id, HttpServletRequest httpServletRequest) {
         Garage garage = garageRepository.findByIdAndUserId(id, authenticatedUser().getId()).orElseThrow(() -> new EntityNotFoundException("Garage not found"));
         if (garage instanceof Motorbike motorbike){
             motorbike.setName(motorbikeGarageDto.getName());
@@ -209,17 +209,17 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     @TryCatchAnnotation
-    public CustomPageResponse<GarageDto> garagesByCategory(String category, Integer pageNumber) {
+    public CustomPageResponse<GarageResponse> garagesByCategory(String category, Integer pageNumber) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
-        Page<GarageDto> garagePage = garageRepository.findAllByCategory(GarageCategory.valueOf(category), pageRequest)
+        Page<GarageResponse> garagePage = garageRepository.findAllByCategory(GarageCategory.valueOf(category), pageRequest)
                 .map(garageAdapter::toBusiness);
         return customPageAdapter.toBusiness(garagePage);
     }
 
     @Override
     @TryCatchAnnotation
-    public CustomPageResponse<GarageDto> searchGarages(
+    public CustomPageResponse<GarageResponse> searchGarages(
             Integer pageNumber, String name, String vehicleMake, String vehicleModel, Integer mileage, Integer previousOwnersCount, Integer enginePower,
             Integer topSpeed, Integer acceleration, String transmissionType, String driveTrain, String enginePosition, String engineLayout, String engineAspiration, String bodyType
     ) {
@@ -283,14 +283,14 @@ public class GarageServiceImpl implements GarageService {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
-        Page<GarageDto> garagePage = garageRepository.findAll(vehiclesSpecification, pageRequest)
+        Page<GarageResponse> garagePage = garageRepository.findAll(vehiclesSpecification, pageRequest)
                 .map(garageAdapter::toBusiness);
         return customPageAdapter.toBusiness(garagePage);
     }
 
     @Override
     @TryCatchAnnotation
-    public CustomPageResponse<GarageDto> searchMotorbikeGarages(
+    public CustomPageResponse<GarageResponse> searchMotorbikeGarages(
             Integer pageNumber, String name, String motorbikeMake, String motorbikeModel, String motorbikeCategory, Integer mileage,
             Integer previousOwnersCount, Integer enginePower, Integer topSpeed, Integer acceleration, String transmissionType,
             String engineAspiration, String engineLayout
@@ -342,7 +342,7 @@ public class GarageServiceImpl implements GarageService {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(pageNumber, PAGE_SIZE, sort);
-        Page<GarageDto> garagePage = garageRepository.findAll(garageSpecification, pageRequest)
+        Page<GarageResponse> garagePage = garageRepository.findAll(garageSpecification, pageRequest)
                 .map(garageAdapter::toBusiness);
         return customPageAdapter.toBusiness(garagePage);
     }

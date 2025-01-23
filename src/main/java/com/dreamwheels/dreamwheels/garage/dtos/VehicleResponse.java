@@ -1,8 +1,6 @@
 package com.dreamwheels.dreamwheels.garage.dtos;
 
 import com.dreamwheels.dreamwheels.garage.enums.*;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 
 @NoArgsConstructor
@@ -10,7 +8,7 @@ import lombok.*;
 @Getter
 @Builder
 @AllArgsConstructor
-public class VehicleDto extends GarageDto{
+public class VehicleResponse extends GarageResponse {
     private String vehicleMake;
     private VehicleModel vehicleModel;
     private DriveTrain driveTrain;

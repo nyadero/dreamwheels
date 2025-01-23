@@ -1,6 +1,6 @@
 package com.dreamwheels.dreamwheels.garage.controller;
 
-import com.dreamwheels.dreamwheels.garage.dtos.GarageDto;
+import com.dreamwheels.dreamwheels.garage.dtos.GarageResponse;
 import com.dreamwheels.dreamwheels.garage.serviceimpl.GarageServiceImpl;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeAll;
@@ -64,7 +64,7 @@ class GarageControllerTest {
         vehicleGarageModel.add("torque", String.valueOf(589));
         vehicleGarageModel.add("topSpeed", String.valueOf(340));
         vehicleGarageModel.add("transmissionType", "Manual");
-        when(garageService.addVehicleGarage(any(), any())).thenReturn(new GarageDto());
+        when(garageService.addVehicleGarage(any(), any())).thenReturn(new GarageResponse());
 
         var response = mockMvc.perform(
                         post("/api/v1/garages/vehicle")
@@ -101,7 +101,7 @@ class GarageControllerTest {
         motorBikeGarageModel.add("fuelType", "Petrol");
         motorBikeGarageModel.add("engineAspiration", "Turbocharged");
         motorBikeGarageModel.add("transmissionType", "Automatic");
-        when(garageService.addMotorbikeGarage(any(), any())).thenReturn(new GarageDto());
+        when(garageService.addMotorbikeGarage(any(), any())).thenReturn(new GarageResponse());
 
         var response = mockMvc.perform(
                         post("/api/v1/garages/motorbike")
@@ -137,7 +137,7 @@ class GarageControllerTest {
 
     @Test
     void getGarageById() throws Exception {
-        when(garageService.getGarageById(anyString())).thenReturn(new GarageDto());
+        when(garageService.getGarageById(anyString())).thenReturn(new GarageResponse());
 
         var garageId = "10e468b3-7b93-44dd-91de-b03d85d988fb";
         var response = mockMvc.perform(
@@ -175,7 +175,7 @@ class GarageControllerTest {
         vehicleGarageModel.add("torque", String.valueOf(589));
         vehicleGarageModel.add("topSpeed", String.valueOf(340));
         vehicleGarageModel.add("transmissionType", "Manual");
-        when(garageService.updateVehicleGarage(any(), anyString(), any())).thenReturn(new GarageDto());
+        when(garageService.updateVehicleGarage(any(), anyString(), any())).thenReturn(new GarageResponse());
 
         var garageId = "10e468b3-7b93-44dd-91de-b03d85d988fb";
         var response = mockMvc.perform(
@@ -212,7 +212,7 @@ class GarageControllerTest {
         motorBikeGarageModel.add("fuelType", "Petrol");
         motorBikeGarageModel.add("engineAspiration", "Turbocharged");
         motorBikeGarageModel.add("transmissionType", "Automatic");
-        when(garageService.updateMotorbikeGarage(any(), anyString(), any())).thenReturn(new GarageDto());
+        when(garageService.updateMotorbikeGarage(any(), anyString(), any())).thenReturn(new GarageResponse());
 
         var motorbikeId = "10e468b3-7b93-44dd-91de-b03d85d988fb";
         var response = mockMvc.perform(

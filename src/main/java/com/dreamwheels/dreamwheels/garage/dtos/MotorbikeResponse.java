@@ -3,8 +3,6 @@ package com.dreamwheels.dreamwheels.garage.dtos;
 import com.dreamwheels.dreamwheels.garage.enums.MotorbikeCategory;
 import com.dreamwheels.dreamwheels.garage.enums.MotorbikeMake;
 import com.dreamwheels.dreamwheels.garage.enums.MotorbikeModel;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 
 @NoArgsConstructor
@@ -12,7 +10,7 @@ import lombok.*;
 @Getter
 @Builder
 @AllArgsConstructor
-public class MotorbikeDto extends GarageDto{
+public class MotorbikeResponse extends GarageResponse {
     private MotorbikeMake motorbikeMake;
 
     private MotorbikeModel motorbikeModel;

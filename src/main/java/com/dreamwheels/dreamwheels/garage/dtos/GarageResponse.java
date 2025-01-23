@@ -1,15 +1,12 @@
 package com.dreamwheels.dreamwheels.garage.dtos;
 
 import com.dreamwheels.dreamwheels.comments.dtos.CommentDto;
-import com.dreamwheels.dreamwheels.comments.entity.Comment;
 import com.dreamwheels.dreamwheels.garage.enums.EngineAspiration;
 import com.dreamwheels.dreamwheels.garage.enums.FuelType;
 import com.dreamwheels.dreamwheels.garage.enums.GarageCategory;
 import com.dreamwheels.dreamwheels.garage.enums.TransmissionType;
 import com.dreamwheels.dreamwheels.uploaded_files.dto.UploadedFileDto;
-import com.dreamwheels.dreamwheels.uploaded_files.entity.UploadedFile;
 import com.dreamwheels.dreamwheels.users.dtos.UserDto;
-import com.dreamwheels.dreamwheels.users.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -23,7 +20,7 @@ import java.util.List;
 @Setter
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GarageDto {
+public class GarageResponse {
     private String id;
 
     private String name;

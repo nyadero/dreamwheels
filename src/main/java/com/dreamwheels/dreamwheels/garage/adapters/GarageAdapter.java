@@ -2,20 +2,19 @@ package com.dreamwheels.dreamwheels.garage.adapters;
 
 import com.dreamwheels.dreamwheels.comments.adapters.CommentAdapter;
 import com.dreamwheels.dreamwheels.configuration.adapters.EntityAdapter;
-import com.dreamwheels.dreamwheels.garage.dtos.GarageDto;
-import com.dreamwheels.dreamwheels.garage.dtos.MotorbikeDto;
-import com.dreamwheels.dreamwheels.garage.dtos.VehicleDto;
+import com.dreamwheels.dreamwheels.garage.dtos.GarageResponse;
+import com.dreamwheels.dreamwheels.garage.dtos.MotorbikeResponse;
+import com.dreamwheels.dreamwheels.garage.dtos.VehicleResponse;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.entity.Motorbike;
 import com.dreamwheels.dreamwheels.garage.entity.Vehicle;
 import com.dreamwheels.dreamwheels.uploaded_files.adapters.UploadedFileAdapter;
 import com.dreamwheels.dreamwheels.users.dtos.UserDto;
 import com.dreamwheels.dreamwheels.users.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GarageAdapter implements EntityAdapter<Garage, GarageDto> {
+public class GarageAdapter implements EntityAdapter<Garage, GarageResponse> {
 
     private final UploadedFileAdapter uploadedFileAdapter;
 
@@ -27,22 +26,22 @@ public class GarageAdapter implements EntityAdapter<Garage, GarageDto> {
     }
 
     @Override
-    public GarageDto toBusiness(Garage garage) {
-        GarageDto garageDto = null;
+    public GarageResponse toBusiness(Garage garage) {
+        GarageResponse garageResponse = null;
         if (garage instanceof Vehicle vehicle){
-            garageDto = vehicleGarageDto(vehicle);
-            buildGarageDto(garageDto, garage);
+            garageResponse = vehicleGarageDto(vehicle);
+            buildGarageDto(garageResponse, garage);
         } else if (garage instanceof Motorbike motorbike) {
-            garageDto = motorbikeGarageDto(motorbike);
-            buildGarageDto(garageDto, garage);
+            garageResponse = motorbikeGarageDto(motorbike);
+            buildGarageDto(garageResponse, garage);
         }else{
             return null;
         }
-        return garageDto;
+        return garageResponse;
     }
 
-    private GarageDto motorbikeGarageDto(Motorbike motorbike) {
-        return MotorbikeDto.builder()
+    private GarageResponse motorbikeGarageDto(Motorbike motorbike) {
+        return MotorbikeResponse.builder()
                 .motorbikeCategory(motorbike.getMotorbikeCategory())
                 .motorbikeMake(motorbike.getMotorbikeMake())
                 .motorbikeModel(motorbike.getMotorbikeModel())
@@ -50,8 +49,8 @@ public class GarageAdapter implements EntityAdapter<Garage, GarageDto> {
     }
 
 
-    private GarageDto vehicleGarageDto(Vehicle vehicle) {
-        return VehicleDto.builder()
+    private GarageResponse vehicleGarageDto(Vehicle vehicle) {
+        return VehicleResponse.builder()
                 .vehicleModel(vehicle.getVehicleModel())
                 .bodyType(vehicle.getBodyType())
                 .driveTrain(vehicle.getDriveTrain())
@@ -61,27 +60,27 @@ public class GarageAdapter implements EntityAdapter<Garage, GarageDto> {
                 .build();
     }
 
-    private void buildGarageDto(GarageDto garageDto, Garage garage) {
-        garageDto.setAcceleration(garage.getAcceleration());
-        garageDto.setId(garage.getId());
-        garageDto.setCategory(garage.getCategory());
-        garageDto.setDescription(garage.getDescription());
-        garageDto.setBuyingPrice(garage.getBuyingPrice());
-        garageDto.setEnginePower(garage.getEnginePower());
-        garageDto.setCommentsCount(garage.getCommentsCount());
-        garageDto.setName(garage.getName());
-        garageDto.setMileage(garage.getMileage());
-        garageDto.setEngineAspiration(garage.getEngineAspiration());
-        garageDto.setLikesCount(garage.getLikesCount());
-        garageDto.setTorque(garage.getTorque());
-        garageDto.setFuelType(garage.getFuelType());
-        garageDto.setTransmissionType(garage.getTransmissionType());
-        garageDto.setCreatedAt(garage.getCreatedAt());
-        garageDto.setUpdatedAt(garage.getUpdatedAt());
-        garageDto.setUser(garage.getUser() != null ? mapToUserDto(garage.getUser()) : null);
-        garageDto.setGarageFiles(garage.getGarageFiles().stream().map(uploadedFileAdapter::toBusiness).toList());
-        garageDto.setPreviousOwnersCount(garage.getPreviousOwnersCount());
-        garageDto.setComments(garage.getComments().stream().map(commentAdapter::toBusiness).toList());
+    private void buildGarageDto(GarageResponse garageResponse, Garage garage) {
+        garageResponse.setAcceleration(garage.getAcceleration());
+        garageResponse.setId(garage.getId());
+        garageResponse.setCategory(garage.getCategory());
+        garageResponse.setDescription(garage.getDescription());
+        garageResponse.setBuyingPrice(garage.getBuyingPrice());
+        garageResponse.setEnginePower(garage.getEnginePower());
+        garageResponse.setCommentsCount(garage.getCommentsCount());
+        garageResponse.setName(garage.getName());
+        garageResponse.setMileage(garage.getMileage());
+        garageResponse.setEngineAspiration(garage.getEngineAspiration());
+        garageResponse.setLikesCount(garage.getLikesCount());
+        garageResponse.setTorque(garage.getTorque());
+        garageResponse.setFuelType(garage.getFuelType());
+        garageResponse.setTransmissionType(garage.getTransmissionType());
+        garageResponse.setCreatedAt(garage.getCreatedAt());
+        garageResponse.setUpdatedAt(garage.getUpdatedAt());
+        garageResponse.setUser(garage.getUser() != null ? mapToUserDto(garage.getUser()) : null);
+        garageResponse.setGarageFiles(garage.getGarageFiles().stream().map(uploadedFileAdapter::toBusiness).toList());
+        garageResponse.setPreviousOwnersCount(garage.getPreviousOwnersCount());
+        garageResponse.setComments(garage.getComments().stream().map(commentAdapter::toBusiness).toList());
     }
 
     private UserDto mapToUserDto(User user) {
