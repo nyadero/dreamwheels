@@ -150,10 +150,6 @@ public class AuthServiceImpl implements AuthService {
     public SigninResponse signinUser(SigninRequest signinRequest)  {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword());
         log.info("isAuthenticated {}", usernamePasswordAuthenticationToken.getDetails());
-        if (usernamePasswordAuthenticationToken.getDetails() == null){
-            log.error("Incorrect credentials");
-            throw new BadCredentialsException("Check your credentials and try again");
-        }
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         User user = (User) authentication.getPrincipal();
         var jwtToken = jwtUtils.generateJwtToken(user);
