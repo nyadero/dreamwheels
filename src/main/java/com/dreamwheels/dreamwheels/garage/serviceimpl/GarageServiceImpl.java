@@ -5,7 +5,7 @@ import com.dreamwheels.dreamwheels.configuration.exceptions.EntityNotFoundExcept
 import com.dreamwheels.dreamwheels.configuration.middleware.TryCatchAnnotation;
 import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.garage.adapters.GarageAdapter;
-import com.dreamwheels.dreamwheels.garage.dtos.GarageResponse;
+import com.dreamwheels.dreamwheels.garage.dtos.responses.GarageResponse;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.MotorbikeGarageRequest;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.VehicleGarageRequest;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;

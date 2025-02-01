@@ -1,6 +1,6 @@
 package com.dreamwheels.dreamwheels.garage.controller;
 
-import com.dreamwheels.dreamwheels.garage.dtos.GarageResponse;
+import com.dreamwheels.dreamwheels.garage.dtos.responses.GarageResponse;
 import com.dreamwheels.dreamwheels.garage.serviceimpl.GarageServiceImpl;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeAll;

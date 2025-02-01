@@ -1,7 +1,7 @@
 package com.dreamwheels.dreamwheels.garage.service;
 
 import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
-import com.dreamwheels.dreamwheels.garage.dtos.GarageResponse;
+import com.dreamwheels.dreamwheels.garage.dtos.responses.GarageResponse;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.MotorbikeGarageRequest;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.VehicleGarageRequest;
 import jakarta.servlet.http.HttpServletRequest;

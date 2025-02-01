@@ -5,7 +5,7 @@ import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
-import com.dreamwheels.dreamwheels.garage.dtos.GarageResponse;
+import com.dreamwheels.dreamwheels.garage.dtos.responses.GarageResponse;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.MotorbikeGarageRequest;
 import com.dreamwheels.dreamwheels.garage.dtos.requests.VehicleGarageRequest;
 import com.dreamwheels.dreamwheels.garage.service.GarageService;

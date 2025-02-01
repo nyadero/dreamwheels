@@ -1,4 +1,4 @@
-package com.dreamwheels.dreamwheels.garage.dtos;
+package com.dreamwheels.dreamwheels.garage.dtos.responses;
 
 import com.dreamwheels.dreamwheels.comments.dtos.CommentDto;
 import com.dreamwheels.dreamwheels.garage.enums.EngineAspiration;

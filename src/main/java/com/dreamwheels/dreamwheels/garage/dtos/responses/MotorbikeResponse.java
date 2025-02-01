@@ -1,4 +1,4 @@
-package com.dreamwheels.dreamwheels.garage.dtos;
+package com.dreamwheels.dreamwheels.garage.dtos.responses;
 
 import com.dreamwheels.dreamwheels.garage.enums.MotorbikeCategory;
 import com.dreamwheels.dreamwheels.garage.enums.MotorbikeMake;
