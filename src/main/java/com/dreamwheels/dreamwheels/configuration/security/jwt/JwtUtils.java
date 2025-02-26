@@ -23,14 +23,14 @@ import java.util.function.Function;
 public class JwtUtils {
     public static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${application.security.jwt.secret-key}")
-    private String jwtSecret;
+//    @Value("${application.security.jwt.secret-key}")
+    private final String jwtSecret = System.getenv("JWT_SECRET_KEY");
 
-    @Value("${application.security.jwt.expiration}")
-    private long jwtExpirations;
+//    @Value("${application.security.jwt.expiration}")
+    private final String jwtExpirations = System.getenv("JWT_EXPIRATION");
 
-    @Value("${application.security.jwt.refresh-token.expiration}")
-    private long refreshExpiration;
+//    @Value("${application.security.jwt.refresh-token.expiration}")
+    private String refreshExpiration = System.getenv("JWT_REFRESH_TOKEN_EXPIRATION");
 
 
     public String extractUsername(String token){
@@ -70,7 +70,7 @@ public class JwtUtils {
     }
 
     private String generateJwtToken(Map<String,Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpirations);
+        return buildToken(extraClaims, userDetails, Long.parseLong(jwtExpirations));
     }
 
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long jwtExpirations) {
@@ -93,4 +93,11 @@ public class JwtUtils {
         return false;
     }
 
+    public long getRefreshExpiration() {
+        return Long.parseLong(refreshExpiration);
+    }
+
+    public void setRefreshExpiration(long refreshExpiration) {
+        this.refreshExpiration = String.valueOf(refreshExpiration);
+    }
 }
