@@ -4,7 +4,6 @@ import com.dreamwheels.dreamwheels.auth.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDto {
+public class UserResponse {
     private String id;
     private String name;
     private String email;
