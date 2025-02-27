@@ -9,7 +9,7 @@ import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.entity.Motorbike;
 import com.dreamwheels.dreamwheels.garage.entity.Vehicle;
 import com.dreamwheels.dreamwheels.uploaded_files.adapters.UploadedFileAdapter;
-import com.dreamwheels.dreamwheels.users.dtos.UserDto;
+import com.dreamwheels.dreamwheels.users.dtos.UserResponse;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -83,8 +83,8 @@ public class GarageAdapter implements EntityAdapter<Garage, GarageResponse> {
         garageResponse.setComments(garage.getComments().stream().map(commentAdapter::toBusiness).toList());
     }
 
-    private UserDto mapToUserDto(User user) {
-        return UserDto.builder()
+    private UserResponse mapToUserDto(User user) {
+        return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())

@@ -4,9 +4,8 @@ import com.dreamwheels.dreamwheels.configuration.responses.CustomPageResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.Data;
 import com.dreamwheels.dreamwheels.configuration.responses.GarageApiResponse;
 import com.dreamwheels.dreamwheels.configuration.responses.ResponseType;
-import com.dreamwheels.dreamwheels.users.dtos.UserDto;
+import com.dreamwheels.dreamwheels.users.dtos.UserResponse;
 import com.dreamwheels.dreamwheels.users.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,19 +21,19 @@ public class UserController {
 
     //    all users
     @GetMapping
-    public ResponseEntity<GarageApiResponse<CustomPageResponse<UserDto>>> allUsers(
+    public ResponseEntity<GarageApiResponse<CustomPageResponse<UserResponse>>> allUsers(
             @RequestParam(name = "page", defaultValue = "0") int page
     ){
-        CustomPageResponse<UserDto> users = userService.allUsers(page);
+        CustomPageResponse<UserResponse> users = userService.allUsers(page);
         return ResponseEntity.ok(new GarageApiResponse<>(new Data<>(users), "Users fetched", ResponseType.SUCCESS));
     }
 
 //    user by id
     @GetMapping("/{id}")
-    public ResponseEntity<GarageApiResponse<UserDto>> userById(
+    public ResponseEntity<GarageApiResponse<UserResponse>> userById(
             @PathVariable("id") String id
     ){
-        UserDto user = userService.userById(id);
+        UserResponse user = userService.userById(id);
         return ResponseEntity.ok(new GarageApiResponse<>(new Data<>(user), "User fetched", ResponseType.SUCCESS));
     }
 

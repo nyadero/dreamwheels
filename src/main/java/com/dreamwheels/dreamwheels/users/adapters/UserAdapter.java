@@ -1,15 +1,15 @@
 package com.dreamwheels.dreamwheels.users.adapters;
 
 import com.dreamwheels.dreamwheels.configuration.adapters.EntityAdapter;
-import com.dreamwheels.dreamwheels.users.dtos.UserDto;
+import com.dreamwheels.dreamwheels.users.dtos.UserResponse;
 import com.dreamwheels.dreamwheels.users.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserAdapter implements EntityAdapter<User, UserDto> {
+public class UserAdapter implements EntityAdapter<User, UserResponse> {
     @Override
-    public UserDto toBusiness(User user) {
-        return UserDto.builder()
+    public UserResponse toBusiness(User user) {
+        return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())

@@ -6,7 +6,7 @@ import com.dreamwheels.dreamwheels.garage.enums.FuelType;
 import com.dreamwheels.dreamwheels.garage.enums.GarageCategory;
 import com.dreamwheels.dreamwheels.garage.enums.TransmissionType;
 import com.dreamwheels.dreamwheels.uploaded_files.dto.UploadedFileDto;
-import com.dreamwheels.dreamwheels.users.dtos.UserDto;
+import com.dreamwheels.dreamwheels.users.dtos.UserResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -53,7 +53,7 @@ public class GarageResponse {
 
     private EngineAspiration engineAspiration;
 
-    private UserDto user;
+    private UserResponse user;
 
     private List<UploadedFileDto> garageFiles;
 
