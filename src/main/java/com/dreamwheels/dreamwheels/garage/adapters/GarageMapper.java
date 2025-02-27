@@ -6,25 +6,29 @@ import com.dreamwheels.dreamwheels.garage.dtos.responses.VehicleResponse;
 import com.dreamwheels.dreamwheels.garage.entity.Garage;
 import com.dreamwheels.dreamwheels.garage.entity.Motorbike;
 import com.dreamwheels.dreamwheels.garage.entity.Vehicle;
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface GarageMapper {
-    GarageMapper INSTANCE = Mappers.getMapper(GarageMapper.class);
 
-    GarageResponse toGarageDTO(Garage garage);
+    // Automatically detect subclass and return the correct response type
+    default GarageResponse toGarageDto(Garage garage){
+        if (garage instanceof Motorbike){
+            return toMotorbikeResponse((Motorbike) garage);
+        } else if (garage instanceof Vehicle) {
+            return toVehicleResponse((Vehicle) garage);
+        }
+        return toGarageResponse(garage);
+    }
 
-    MotorbikeResponse toMotorbikeDTO(Motorbike motorbike);
+    GarageResponse toGarageResponse(Garage garage);
 
-    VehicleResponse toVehicleDTO(Vehicle vehicle);
+    @InheritConfiguration(name = "toGarageResponse")
+    MotorbikeResponse toMotorbikeResponse(Motorbike motorbike);
 
-//    List<GarageDTO> toGarageDTOList(List<Garage> garages);
-
-//    Garage toGarageEntity(GarageDTO garageDTO);
-//
-//    Motorbike toMotorbikeEntity(MotorbikeDTO motorbikeDTO);
-//
-//    Vehicle toVehicleEntity(VehicleDTO vehicleDTO);
+    @InheritConfiguration(name = "toGarageResponse")
+    VehicleResponse toVehicleResponse(Vehicle vehicle);
 
 }
